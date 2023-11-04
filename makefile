@@ -13,7 +13,7 @@ NotValid:
 	@echo "Please specificy graphs, main, run, or clean."
 
 graphs:
-	mkdir $(DIRECT)
+	mkdir -p $(DIRECT)
 	g++ -std=c++11 GraphGenerator.cpp -o $(TARGET)
 	./$(TARGET)
 
