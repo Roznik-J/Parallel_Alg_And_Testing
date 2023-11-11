@@ -1,3 +1,9 @@
+#*****************************************************
+# Developed by J. Roznik
+# 2023-11-11
+# Make File for the Kernels Library
+#*****************************************************
+
 LIBRARY_NAME = libkernels.a
 
 all: $(LIBRARY_NAME)

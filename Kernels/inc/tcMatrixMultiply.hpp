@@ -1,3 +1,9 @@
+//*****************************************************
+// Developed by J. Roznik
+// 2023-11-11
+// Multiplies Matrixes using the cubLAS library
+//*****************************************************
+
 #ifndef TCSMATRIXMULTIPLY_HPP_
 #define TCSMATRIXMULTIPLY_HPP_
 

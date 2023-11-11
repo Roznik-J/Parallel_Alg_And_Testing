@@ -1,3 +1,8 @@
+//*****************************************************
+// Developed by J. Roznik
+// 2023-11-11
+// Parallel Programming Project Main
+//*****************************************************
 
 #include <string>
 #include <vector>

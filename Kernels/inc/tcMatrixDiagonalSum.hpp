@@ -1,3 +1,9 @@
+//*****************************************************
+// Developed by J. Roznik
+// 2023-11-11
+// Sums the Diagonals of a Matrix
+//*****************************************************
+
 #ifndef TCSMATRIXDIAGONALSUM_HPP_
 #define TCSMATRIXDIAGONALSUM_HPP_
 

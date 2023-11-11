@@ -1,3 +1,9 @@
+//*****************************************************
+// Developed by J. Roznik
+// 2023-11-11
+// Multiplies Matrixes using the cubLAS library
+//*****************************************************
+
 #include <tcMatrixMultiply.hpp>
 #include <iostream>
 
