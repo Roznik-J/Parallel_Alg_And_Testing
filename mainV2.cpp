@@ -194,10 +194,16 @@ void RunSimpleTest2(void)
 
 void RunDiagonalSumTest(void)
 {
-    std::vector<float> A = {1,1,1,  2,5,1,  4,9,15};
+    //std::vector<float> A = {1,1,1,  2,5,1,  4,9,15};
+    std::vector<float>   A = {0,3,1,1,2,0,
+                              3,2,6,6,2,2,
+                              1,6,4,5,6,1,
+                              1,6,5,4,6,1,
+                              2,2,6,6,2,3,
+                              0,2,1,1,3,0};
 
-    int lnNumCols = 3;
-    int lnNumRows = 3;
+    int lnNumCols = 6;
+    int lnNumRows = 6;
     int InputDataSize = lnNumCols * lnNumRows;
 
     void* AGpu;
@@ -231,10 +237,103 @@ void RunDiagonalSumTest(void)
 
 }
 
+int GetNum3Cycles(void* apnA, int anNumNodes)
+{
+    void* AGpu;
+    int InputDataSize = anNumNodes*anNumNodes;
+    cudaMalloc(&AGpu, sizeof(float)*InputDataSize);
+    cudaMemcpy(AGpu, apnA, sizeof(float)*InputDataSize, cudaMemcpyHostToDevice);
+
+    cudaStream_t lcCudaStream;
+    cudaStreamCreate(&lcCudaStream);
+    cublasHandle_t lcCublasHandle;
+    auto handlereturn = cublasCreate(&lcCublasHandle);
+
+    void* A2Gpu;
+    cudaMalloc(&A2Gpu, sizeof(float)*InputDataSize);
+
+    void* A3Gpu;
+    cudaMalloc(&A3Gpu, sizeof(float)*InputDataSize);
+
+    void* DiagGpu;
+    cudaMalloc(&DiagGpu, sizeof(float)*1);
+
+    const float lcScaleFactor = 1;
+    const float lcZeroFactor = 0;
+
+    int error = Kernel::Matrix::Multiply(lcCublasHandle, 
+                             CUBLAS_OP_T,
+                             CUBLAS_OP_T,
+                             anNumNodes,anNumNodes,anNumNodes,
+                             &lcScaleFactor,
+                             static_cast<float*>(AGpu),
+                             anNumNodes,
+                             static_cast<float*>(AGpu),
+                             anNumNodes,
+                             &lcZeroFactor,
+                             static_cast<float*>(A2Gpu),
+                             anNumNodes);
+
+    error = Kernel::Matrix::Multiply(lcCublasHandle, 
+                             CUBLAS_OP_T,
+                             CUBLAS_OP_T,
+                             anNumNodes,anNumNodes,anNumNodes,
+                             &lcScaleFactor,
+                             static_cast<float*>(AGpu),
+                             anNumNodes,
+                             static_cast<float*>(A2Gpu),
+                             anNumNodes,
+                             &lcZeroFactor,
+                             static_cast<float*>(A3Gpu),
+                             anNumNodes);
+
+    dim3 lsGridSize{};
+    dim3 lsBlockSize{};
+    int lnThreadsPerBlock = 1024;
+    lsGridSize.x =std::ceil(static_cast<float>(anNumNodes)/lnThreadsPerBlock);
+    int lnNumWarps = std::ceil((static_cast<float>(anNumNodes)/lsGridSize.x)/snWarpSize);
+    lsBlockSize.x = lnNumWarps*snWarpSize;
+
+    Kernel::Matrix::SumDiagonals(lsGridSize, lsBlockSize, lcCudaStream,
+                    anNumNodes, static_cast<float*>(A3Gpu), static_cast<float*>(DiagGpu));
+
+    float* lpfRCpu = (float*)malloc(sizeof(float)*1);
+    cudaMemcpy(lpfRCpu, DiagGpu, sizeof(float)*1, cudaMemcpyDeviceToHost);
+
+    int lnNumCycles = (int)((*lpfRCpu)/6);
+
+    cudaFree(AGpu);
+    cudaFree(A2Gpu);
+    cudaFree(A3Gpu);
+    cudaFree(DiagGpu);
+
+    return lnNumCycles;
+}
+
+void EntireTestCase(void)
+{
+    std::vector<float> lcA = {0,1,0,0,0,0,
+                              1,0,1,1,0,0,
+                              0,1,0,1,1,0,
+                              0,1,1,0,1,0,
+                              0,0,1,1,0,1,
+                              0,0,0,0,1,0};
+    int lnNumNodes = 6;
+
+    int lnNum3Cycles = GetNum3Cycles(lcA.data(), lnNumNodes);
+
+    std::cout << lnNum3Cycles << std::endl;
+
+    cudaStream_t lcCudaStream;
+    cudaStreamCreate(&lcCudaStream);
+                        
+}
+
 int main(int argc, char * argv[]) 
 {
     //RunSimpleTest();
     //RunSimpleTest2();
-    RunDiagonalSumTest();
+    //RunDiagonalSumTest();
+    EntireTestCase();
 
 }
