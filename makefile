@@ -1,7 +1,6 @@
 #makefile
 CFLAGS = -g -Wall
-
-DEPENDS = TestCase.cpp
+LDFLAGS = -L./Kernels -lkernels
 
 TARGET = output
 
@@ -17,8 +16,8 @@ graphs:
 	g++ -std=c++11 GraphGenerator.cpp -o $(TARGET)
 	./$(TARGET)
 
-main: 
-	g++ -std=c++17 main.cpp $(CFLAGS) $(DEPENDS) -o $(TARGET)
+main: Kernels/libkernels.a TestCase.cpp
+	g++ -std=c++17 main.cpp $(CFLAGS) TestCase.cpp -I./Kernels/inc -I/usr/local/cuda/include -o $(TARGET) -L./Kernels -L/usr/local/cuda/lib64 -lkernels -lcudart -lcuda -Wl,-rpath=./Kernels
 
 run: 
 	./$(TARGET) $(FILES)

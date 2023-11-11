@@ -8,3 +8,5 @@ pNotSparseTrue/
 pSparseFalse/
 pSparseTrue/
 result.txt
+*.o
+*.a
