@@ -19,6 +19,9 @@ graphs:
 main: Kernels/libkernels.a TestCase.cpp
 	g++ -std=c++17 main.cpp $(CFLAGS) TestCase.cpp -I./Kernels/inc -I/usr/local/cuda/include -o $(TARGET) -L./Kernels -L/usr/local/cuda/lib64 -lkernels -lcudart -lcuda -Wl,-rpath=./Kernels
 
+mainV2: Kernels/libkernels.a
+	g++ -std=c++17 mainV2.cpp $(CFLAGS) -I./Kernels/inc -I/usr/local/cuda/include -o $(TARGET) -L./Kernels -L/usr/local/cuda/lib64 -lkernels -lcudart -lcuda -lcublas -Wl,-rpath=./Kernels
+
 run: 
 	./$(TARGET) $(FILES)
 

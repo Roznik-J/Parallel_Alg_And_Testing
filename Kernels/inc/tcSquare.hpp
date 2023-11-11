@@ -1,6 +1,6 @@
 
-#ifndef TEST_HPP_
-#define TEST_HPP_
+#ifndef TCSQUARE_HPP_
+#define TCSQUARE_HPP_
 
 #include <cuda_runtime_api.h>
 
