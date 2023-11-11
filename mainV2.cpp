@@ -6,6 +6,9 @@
 #include <chrono>
 
 #include <tcMatrixMultiply.hpp>
+#include <tcMatrixDiagonalSum.hpp>
+
+static const int snWarpSize = 32;
 
 //#include "cublas_v2.h"
 //#include <cuda_runtime_api.h>
@@ -189,9 +192,49 @@ void RunSimpleTest2(void)
 
 }
 
+void RunDiagonalSumTest(void)
+{
+    std::vector<float> A = {1,1,1,  2,5,1,  4,9,15};
+
+    int lnNumCols = 3;
+    int lnNumRows = 3;
+    int InputDataSize = lnNumCols * lnNumRows;
+
+    void* AGpu;
+    cudaMalloc(&AGpu, sizeof(float)*InputDataSize);
+    cudaMemcpy(AGpu, A.data(), sizeof(float)*InputDataSize, cudaMemcpyHostToDevice);
+
+    void* RGpu;
+    cudaMalloc(&RGpu, sizeof(float)*1);
+
+    cudaStream_t lcCudaStream;
+    cudaStreamCreate(&lcCudaStream);
+
+    dim3 lsGridSize{};
+    dim3 lsBlockSize{};
+    int lnThreadsPerBlock = 1024;
+    lsGridSize.x =std::ceil(static_cast<float>(lnNumCols)/lnThreadsPerBlock);
+    int lnNumWarps = std::ceil((static_cast<float>(lnNumCols)/lsGridSize.x)/snWarpSize);
+    lsBlockSize.x = lnNumWarps*snWarpSize;
+
+    Kernel::Matrix::SumDiagonals(lsGridSize, lsBlockSize, lcCudaStream,
+                    lnNumCols, static_cast<float*>(AGpu), static_cast<float*>(RGpu));
+
+    float* lpfRCpu = (float*)malloc(sizeof(float)*1);
+    cudaMemcpy(lpfRCpu, RGpu, sizeof(float)*1, cudaMemcpyDeviceToHost);
+
+    std::cout << "Value : " << *lpfRCpu << std::endl;
+
+    cudaFree(AGpu);
+    cudaFree(RGpu);
+    free(lpfRCpu);
+
+}
+
 int main(int argc, char * argv[]) 
 {
     //RunSimpleTest();
-    RunSimpleTest2();
+    //RunSimpleTest2();
+    RunDiagonalSumTest();
 
 }
