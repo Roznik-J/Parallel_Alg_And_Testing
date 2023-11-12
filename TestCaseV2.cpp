@@ -1,4 +1,4 @@
-#include "TestCase.h"
+#include "TestCaseV2.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -7,118 +7,192 @@
 
 #include <stdio.h>
 
-#include <tcSquare.hpp>
+#include <tcBuildAdjacencyMatrix.hpp>
+#include <tcMatrixMultiply.hpp>
+#include <tcMatrixDiagonalSum.hpp>
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <cmath>
 
 static const int snWarpSize = 32;
 
-using namespace std;
-
-TestCaseV2::TestCaseV2(string fileName) : fileName(fileName) {
-    ifstream fileIn(fileName);;
-
-    // first line is the number of verticies in the graph
-    int numVerticies;
-    fileIn >> numVerticies;
-    fileIn >> edgeSum;
-
-    // resize the vector to hold `N` elements
-    adjList.resize(numVerticies);
-
-    // second line is whether or not it is an undirected graph (directed: false, undirected: true)
-    bool isUndirected;
-    fileIn >> std::boolalpha >> isUndirected;
-    this->isUndirected = isUndirected;
-
-    // read rest of lines and add edges to the graph
-    int src, dest, weight;
-    while (fileIn >> src >> dest >> weight) {
-        adjList[src].push_back({dest, weight});
-        if (isUndirected) {
-            adjList[dest].push_back({src, weight});
-        }
-    }
-}
-
-int TestCaseV2::printSum()
+TestCaseV2::TestCaseV2(std::string& arcFileName)
 {
-    return edgeSum;
+    std::ifstream fileIn(arcFileName);
+
+    fileIn >> mnNumNodes;
+    fileIn >> mnNumEdges;
+    fileIn >> mrSparsity;
+
+    int lnSrc;
+    int lnDst;
+    for(int lnIdx = 0; lnIdx < mnNumEdges; lnIdx++)
+    {
+        fileIn >> lnSrc;
+        fileIn >> lnDst;
+
+        mcSources.push_back(lnSrc);
+        mcDestinations.push_back(lnDst);
+    }
+
+    fileIn.close();
+
+    // Debug only, remove later
+    printEdges();
+    printGraphInfo();
+
+    auto handlereturn = cublasCreate(&mcCublasHandle);
+    Kernel::Err::GetError(handlereturn);
+    Kernel::Err::PrintError(handlereturn);
+
+    cudaStreamCreate(&mcCudaStream);
+
+    ConstructAdjacencyMatrix();
+
+    // Debug Purposes Only, Expensive call!
+    printAdjacencyMatrix();
 }
 
-void TestCaseV2::printList() {
-    if (isUndirected) {
-        cout << endl << "------ Undirected Graph ";
-    } else {
-        cout << endl << "------ Directed Graph ";
-    }
-    cout << "from file: " << fileName << " ------" << endl;
-    for (size_t i = 0; i < this->adjList.size(); i++) {
-        cout << i << ": ";
-        for (size_t j = 0; j < this->adjList.at(i).size(); j++) {
-            Edge edge = this->adjList.at(i).at(j);
-            if (j == 0) {
-                cout << "(" << edge.dest << ", " << edge.weight << ")";
-            } else {
-                cout << " -> (" << edge.dest << ", " << edge.weight << ")";
-            }
-        }
-        cout << endl;
-    }
-}
-
-void TestCaseV2::RunSquareTest(void)
+TestCaseV2::~TestCaseV2(void)
 {
-    cout << "here" << endl;
+    cublasDestroy(mcCublasHandle);
+    cudaStreamDestroy(mcCudaStream);
 
-    cudaStream_t lcCudaStream;
-    cudaStreamCreate(&lcCudaStream);
+    cudaFree(mpvSourcesGpu);
+    cudaFree(mpvDestGpu);
+    cudaFree(mpvAdjGpu);
+}
 
-    // Input Data
-    vector<float> lnInputData = {1,2,3,4,5,6,7,8};
-    //float lnInputData[] = {1,2,3,4,5,7,8,9};
-    int InputDataSize = lnInputData.size();
+void TestCaseV2::printEdges(void)
+{
+    for(int lnIdx=0; lnIdx < mcSources.size(); lnIdx++)
+    {
+        std::cout << mcSources[lnIdx] << " " << mcDestinations[lnIdx] << std::endl;
+    }
+}
 
-    // GPU DATA Management
-    //     Input Data
-    void* lpvGpuInputData;
-    cudaMalloc(&lpvGpuInputData, sizeof(float)*InputDataSize);
-    cudaMemcpy(lpvGpuInputData, lnInputData.data(), sizeof(float)*InputDataSize, cudaMemcpyHostToDevice);
-    //     Output Data
-    void* lpvGpuOutputData;
-    cudaMalloc(&lpvGpuOutputData, sizeof(float)*InputDataSize);
+void TestCaseV2::printGraphInfo(void)
+{
+    std::cout << "Number of Nodes: " << mnNumNodes;
+    std::cout << " Number of Edges: " << mnNumEdges;
+    std::cout << " Graph Sparsity: " << mrSparsity << std::endl;
+}
 
-    // Create Thread Structures
+void TestCaseV2::printAdjacencyMatrix(void)
+{
+    int lnDataSize = mnNumNodes*mnNumNodes;
+    float* lpfRCpu = (float*)malloc(sizeof(float)*lnDataSize);
+    cudaMemcpyAsync(lpfRCpu, mpvAdjGpu, sizeof(float)*lnDataSize, cudaMemcpyDeviceToHost, mcCudaStream);
+
+    cudaStreamSynchronize(mcCudaStream);
+
+    int lnIndex = 0;
+
+    for(int lnIdy = 0; lnIdy < mnNumNodes; lnIdy++)
+    {
+        for(int lnIdx = 0; lnIdx < mnNumNodes; lnIdx++)
+        {
+            lnIndex = lnIdy*mnNumNodes + lnIdx;
+            std::cout << lpfRCpu[lnIndex] << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    free(lpfRCpu);
+}
+
+void TestCaseV2::ComputeNumTriangles(void)
+{
+    int InputDataSize = mnNumNodes*mnNumNodes;
+
+    cudaMalloc(&mpvAdj2Gpu, sizeof(float)*InputDataSize);
+
+    cudaMalloc(&mpvAdj3Gpu, sizeof(float)*InputDataSize);
+
+    cudaMalloc(&mpvDiagOutput, sizeof(float)*1);
+
+    const float lcScaleFactor = 1;
+    const float lcZeroFactor = 0;
+
+    int error = Kernel::Matrix::Multiply(mcCublasHandle, 
+                             CUBLAS_OP_T,
+                             CUBLAS_OP_T,
+                             mnNumNodes,mnNumNodes,mnNumNodes,
+                             &lcScaleFactor,
+                             static_cast<float*>(mpvAdjGpu),
+                             mnNumNodes,
+                             static_cast<float*>(mpvAdjGpu),
+                             mnNumNodes,
+                             &lcZeroFactor,
+                             static_cast<float*>(mpvAdj2Gpu),
+                             mnNumNodes);
+
+    Kernel::Err::PrintError(error);
+
+    error = Kernel::Matrix::Multiply(mcCublasHandle, 
+                             CUBLAS_OP_T,
+                             CUBLAS_OP_T,
+                             mnNumNodes,mnNumNodes,mnNumNodes,
+                             &lcScaleFactor,
+                             static_cast<float*>(mpvAdjGpu),
+                             mnNumNodes,
+                             static_cast<float*>(mpvAdj2Gpu),
+                             mnNumNodes,
+                             &lcZeroFactor,
+                             static_cast<float*>(mpvAdj3Gpu),
+                             mnNumNodes);
+
+    Kernel::Err::PrintError(error);
+
     dim3 lsGridSize{};
     dim3 lsBlockSize{};
     int lnThreadsPerBlock = 1024;
-    lsGridSize.x =std::ceil(static_cast<float>(InputDataSize)/lnThreadsPerBlock);
-    int lnNumWarps = std::ceil((static_cast<float>(InputDataSize)/lsGridSize.x)/snWarpSize);
+    lsGridSize.x =std::ceil(static_cast<float>(mnNumNodes)/lnThreadsPerBlock);
+    int lnNumWarps = std::ceil((static_cast<float>(mnNumNodes)/lsGridSize.x)/snWarpSize);
     lsBlockSize.x = lnNumWarps*snWarpSize;
 
-    // Launch Kernel
-    Kernel::Square::LaunchSquareValues(lsGridSize, lsBlockSize, lcCudaStream, snWarpSize, reinterpret_cast<float*>(lpvGpuInputData), reinterpret_cast<float*>(lpvGpuOutputData));
+    Kernel::Matrix::SumDiagonals(lsGridSize, lsBlockSize, mcCudaStream,
+                    mnNumNodes, static_cast<float*>(mpvAdj3Gpu), static_cast<float*>(mpvDiagOutput));
 
-    // Copy data from device to host
-    float* lpfOutputDataCpu = (float*)malloc(sizeof(float)*InputDataSize);
-    cudaMemcpy(lpfOutputDataCpu, lpvGpuOutputData, sizeof(float)*InputDataSize, cudaMemcpyDeviceToHost);
+    float* lpfRCpu = (float*)malloc(sizeof(float)*1);
+    cudaMemcpyAsync(lpfRCpu, mpvDiagOutput, sizeof(float)*1, cudaMemcpyDeviceToHost, mcCudaStream);
 
-    // Expected Values
-    vector<float> lnExpectedOut;
-    for(auto val : lnInputData)
-    {
-        lnExpectedOut.push_back(val*val);
-    }
+    cudaStreamSynchronize(mcCudaStream);
 
-    for(int lnIdx=0; lnIdx < InputDataSize; lnIdx++)
-    {
-        std::cout << "In : " << lnInputData[lnIdx] << " Out: " << lpfOutputDataCpu[lnIdx] << " Exp: " << lnExpectedOut[lnIdx] << std::endl;
-    }
+    mnNumTriangles = (int)((*lpfRCpu)/6);
 
-    //Destruction
-    free(lpfOutputDataCpu);
-    cudaFree(lpvGpuInputData);
-    cudaFree(lpvGpuOutputData);
-    cudaStreamDestroy(lcCudaStream);
+    std::cout << "Number of Triangles : " << mnNumTriangles << std::endl;
+    
+    free(lpfRCpu);
+
+}
+
+int TestCaseV2::GetNumTriangles(void)
+{
+    return mnNumTriangles;
+}
+
+void TestCaseV2::ConstructAdjacencyMatrix(void)
+{
+    int lnDataSize = mnNumNodes*mnNumNodes;
+
+    cudaMalloc(&mpvSourcesGpu, sizeof(int)*lnDataSize);
+    cudaMemcpyAsync(mpvSourcesGpu, mcSources.data(), sizeof(int)*lnDataSize, cudaMemcpyHostToDevice, mcCudaStream);
+
+    cudaMalloc(&mpvDestGpu, sizeof(int)*lnDataSize);
+    cudaMemcpyAsync(mpvDestGpu, mcDestinations.data(), sizeof(int)*lnDataSize, cudaMemcpyHostToDevice, mcCudaStream);
+
+    cudaMalloc(&mpvAdjGpu, sizeof(int)*lnDataSize);
+
+    dim3 lsGridSize{};
+    dim3 lsBlockSize{};
+    int lnThreadsPerBlock = 1024;
+    lsGridSize.x =std::ceil(static_cast<float>(mnNumEdges)/lnThreadsPerBlock);
+    int lnNumWarps = std::ceil((static_cast<float>(mnNumEdges)/lsGridSize.x)/snWarpSize);
+    lsBlockSize.x = lnNumWarps*snWarpSize;
+
+    Kernel::Matrix::BuildAdjacencyMatrix(lsGridSize, lsBlockSize, mcCudaStream, mnNumEdges, mnNumNodes, 
+                                         static_cast<int*>(mpvSourcesGpu), static_cast<int*>(mpvDestGpu), 
+                                         static_cast<float*>(mpvAdjGpu));
+
 }

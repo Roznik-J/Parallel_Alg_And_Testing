@@ -12,6 +12,7 @@
 
 #include <tcMatrixMultiply.hpp>
 #include <tcMatrixDiagonalSum.hpp>
+#include "TestCaseV2.hpp"
 
 static const int snWarpSize = 32;
 
@@ -335,11 +336,60 @@ void EntireTestCase(void)
                         
 }
 
+void TestCase4(void)
+{
+    std::string lcFileName;
+    lcFileName = "v2GraphsSparse/5.txt";
+
+    std::ifstream fileIn(lcFileName);
+
+    int lnNumNodes;
+    int lnNumEdges;
+    float lnSparsity;
+
+    fileIn >> lnNumNodes;
+    fileIn >> lnNumEdges;
+    fileIn >> lnSparsity;
+
+    std::vector<int> lcSources;
+    std::vector<int> lcDestinations;
+
+    std::cout << lnNumNodes << " " << lnNumEdges << " " << lnSparsity << std::endl;
+
+    int lnSrc;
+    int lnDst;
+    for(int lnIdx = 0; lnIdx < lnNumEdges; lnIdx++)
+    {
+        fileIn >> lnSrc;
+        fileIn >> lnDst;
+
+        lcSources.push_back(lnSrc);
+        lcDestinations.push_back(lnDst);
+    }
+
+    for(int lnIdx=0; lnIdx < lcSources.size(); lnIdx++)
+    {
+        std::cout << lcSources[lnIdx] << " " << lcDestinations[lnIdx] << std::endl;
+    }
+
+    fileIn.close();
+
+}
+
 int main(int argc, char * argv[]) 
 {
     //RunSimpleTest();
     //RunSimpleTest2();
     //RunDiagonalSumTest();
-    EntireTestCase();
+    //EntireTestCase();
+    //TestCase4();
+
+    std::string lcTest = "v2GraphsSparse/5.txt";
+
+    TestCaseV2 Test(lcTest);
+    Test.ComputeNumTriangles();
+    std::cout << Test.GetNumTriangles() << std::endl;
+
+    return 0;
 
 }

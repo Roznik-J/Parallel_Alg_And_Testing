@@ -60,15 +60,6 @@ void RandomGraphV2(int anNumNodes, float anSparsity)
     }
 
     // Finished Creating Edges in Graph, now Write to File
-    std::string lcSparseName;
-    if(anSparsity <= 0.5)
-    {
-        lcSparseName = "v2Graphs/";
-    }
-    else
-    {
-        lcSparseName = "v2Graphs/";
-    }
 
     std::string lcFileName;
 
