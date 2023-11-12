@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
+#include <sstream>
 
 using namespace std;
 
@@ -22,14 +23,32 @@ int main(int argc, char * argv[]) {
 		// build test case graph
 		TestCase testCase(fileName);
 
+		int lnNumTriangles = 0;
+
 		// Algorithms go here
 		auto start = chrono::high_resolution_clock::now();
+
+		/*
+		fileResult << "fileName" << "," << fileName << ",";
+        fileResult << "NumNodes" << "," << testCase.GetNodeSize() << ",";
+        fileResult << "NumTriangles" << "," << testCase.GetNumTriangles() << ",";
+        fileResult << "ProgramTime" <<","<<lcTimingInformation.at(5) << ",";
+        fileResult <<"\n";
+		*/
 		
-		runNonGpuMatrxMulti(testCase);
+		lnNumTriangles = runNonGpuMatrxMulti(testCase);
 		auto stop = chrono::high_resolution_clock::now();
     	chrono::duration<double, std::milli> time = stop - start;
 		double timeTaken = time.count();
-		outputFile.push_back(fileName + ", " + to_string(testCase.getNodeSize()) + ", " + to_string(timeTaken));
+		//outputFile.push_back("fileName" + "," + fileName + "," + "NumNodes" + "," + to_string(testCase.getNodeSize()) + "," + "NumTriangles" + "," + lnNumTriangles + + "," + "ProgramTime" + "," + to_string(timeTaken));
+		
+		std::stringstream lcStr;
+		lcStr << "fileName" << "," << fileName << ",";
+        lcStr << "NumNodes" << "," << testCase.getNodeSize() << ",";
+        lcStr << "NumTriangles" << "," << lnNumTriangles << ",";
+        lcStr << "ProgramTime" <<","<<timeTaken << ",";
+
+		outputFile.push_back(lcStr.str());
 	}
 
 	for (size_t i = 0; i < outputFile.size(); i++)

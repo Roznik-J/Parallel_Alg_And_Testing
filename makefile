@@ -33,8 +33,9 @@ graphsV2:
 main: TestCase.cpp NonGpuAlgorithms/MatrixMultiplication.cpp
 	g++ -std=c++17 main.cpp $(CFLAGS) TestCase.cpp -o $(TARGET) NonGpuAlgorithms/MatrixMultiplication.cpp
 
+mainV2: CXXFLAGS += -g -rdynamic -DCOREDUMP_ENABLED
 mainV2: Kernels/libkernels.a TestCaseV2.cpp
-	g++ -std=c++17 mainV2.cpp $(CFLAGS) TestCaseV2.cpp -I./Kernels/inc -I/usr/local/cuda/include -o $(TARGETCUDA) -L./Kernels -L/usr/local/cuda/lib64 -lkernels -lcudart -lcuda -lcublas -Wl,-rpath=./Kernels
+	g++ -std=c++17 $(CXXFLAGS) mainV2.cpp $(CFLAGS) TestCaseV2.cpp -I./Kernels/inc -I/usr/local/cuda/include -o $(TARGETCUDA) -L./Kernels -L/usr/local/cuda/lib64 -lkernels -lcudart -lcuda -lcublas -Wl,-rpath=./Kernels
 
 run: 
 	@./$(TARGET) $(FILESV2)

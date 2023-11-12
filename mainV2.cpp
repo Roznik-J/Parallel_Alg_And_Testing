@@ -14,6 +14,8 @@
 #include <tcMatrixDiagonalSum.hpp>
 #include "TestCaseV2.hpp"
 
+#include <unistd.h>
+
 #include <chrono>
 
 static const int snWarpSize = 32;
@@ -452,10 +454,19 @@ int main(int argc, char * argv[])
     std::vector<std::string> arguments(argv, argv + argc);
 	//std::vector<TestCaseV2> allTests;
 	//std::vector<std::string> outputFile;
+
+
     std::ofstream fileResult("resultCuda.txt");
 
-    for (size_t i = 1; i < arguments.size(); i++) {
+    //for (size_t i = 1; i < arguments.size(); i++) 
+    std::cout << arguments.size() - 1 << std::endl;
+    for (size_t i = 1; i < arguments.size(); i++) 
+    {
 		std::string fileName = arguments.at(i);
+
+        //sleep(0.5);
+
+        std::cout << fileName << std::endl;
 		
 		// build test case graph
 		TestCaseV2 testCase(fileName);
@@ -463,38 +474,19 @@ int main(int argc, char * argv[])
         std::vector<float> lcTimingInformation;
         testCase.GetTimingInformation(lcTimingInformation);
 
-        //for(int lnIdx = 0; lnIdx < lcTimingInformation.size(); lnIdx++)
-        //{
-            //outputFile.push_back()
-        //    fileResult << "AdjBuildSetup" <<","<<lcTimingInformation.at(0); //GetNumEdges
-        //}
         fileResult << "fileName" << "," << fileName << ",";
         fileResult << "NumNodes" << "," << testCase.GetNodeSize() << ",";
-        fileResult << "NumEdges" << "," << testCase.GetNumEdges() << ",";
+        //fileResult << "NumEdges" << "," << testCase.GetNumEdges() << ",";
         fileResult << "NumTriangles" << "," << testCase.GetNumTriangles() << ",";
-        fileResult << "AdjBuildSetup" <<","<<lcTimingInformation.at(0) << ",";
-        fileResult << "AdjBuild" <<","<<lcTimingInformation.at(1) << ",";
-        fileResult << "AdjPower1" <<","<<lcTimingInformation.at(2) << ",";
-        fileResult << "AdjPower2" <<","<<lcTimingInformation.at(3) << ",";
-        fileResult << "DiagSum" <<","<<lcTimingInformation.at(4) << ",";
+        //fileResult << "AdjBuildSetup" <<","<<lcTimingInformation.at(0) << ",";
+        //fileResult << "AdjBuild" <<","<<lcTimingInformation.at(1) << ",";
+        //fileResult << "AdjPower1" <<","<<lcTimingInformation.at(2) << ",";
+        //fileResult << "AdjPower2" <<","<<lcTimingInformation.at(3) << ",";
+        //fileResult << "DiagSum" <<","<<lcTimingInformation.at(4) << ",";
         fileResult << "ProgramTime" <<","<<lcTimingInformation.at(5) << ",";
         fileResult <<"\n";
 
-		// Algorithms go here
-		//auto start = std::chrono::high_resolution_clock::now();
-		
-		//runNonGpuMatrxMulti(testCase);
-        //testCase.ComputeNumTriangles();
-		//auto stop = std::chrono::high_resolution_clock::now();
-    	//std::chrono::duration<double, std::milli> time = stop - start;
-		//double timeTaken = time.count();
-		//outputFile.push_back(fileName + ", " + std::to_string(testCase.GetNodeSize()) + ", " + std::to_string(timeTaken));
 	}
-
-    //for (size_t i = 0; i < outputFile.size(); i++)
-	//{
-	//	fileResult<<outputFile[i]<<std::endl;
-	//}
 
 	fileResult << std::flush;
 	fileResult.close();
