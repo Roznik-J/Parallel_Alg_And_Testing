@@ -16,3 +16,4 @@ resultThreads.txt
 resultCuda.txt
 *.o
 *.a
+.ipynb_checkpoints
