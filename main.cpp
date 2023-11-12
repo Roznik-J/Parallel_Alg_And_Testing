@@ -26,6 +26,8 @@ int main(int argc, char * argv[]) {
 		auto start = chrono::high_resolution_clock::now();
 		
 		runNonGpuMatrxMulti(testCase);
+		// cout << "Result of " << fileName << ": " << runNonGpuMatrxMulti(testCase) << endl;
+
 		auto stop = chrono::high_resolution_clock::now();
     	chrono::duration<double, std::milli> time = stop - start;
 		double timeTaken = time.count();
