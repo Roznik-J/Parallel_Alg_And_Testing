@@ -1,4 +1,5 @@
 #include "TestCase.h"
+#include "NonGpuAlgorithms/MatrixMultiplication.h"
 
 #include <string>
 #include <vector>
@@ -22,6 +23,7 @@ int main(int argc, char * argv[]) {
 		TestCase testCase(fileName);
 
 		// Algorithms go here
+		// runNonGpuMatrxMulti(testCase);
 
 		// This is how we'd take time measure.
 		// It does NOT need to be hear come final version.
@@ -42,7 +44,6 @@ int main(int argc, char * argv[]) {
 	fileResult.close();
 
 	cout << "done" << endl;
-
 	return 0;
 }
 
