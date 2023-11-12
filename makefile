@@ -40,6 +40,9 @@ mainV2: Kernels/libkernels.a TestCaseV2.cpp
 run: 
 	@./$(TARGET) $(FILESV2)
 
+runCal:
+	@./$(TARGET) $(FILESCALIBRATED)
+
 runcuda: 
 	@./$(TARGETCUDA) $(FILESV2)
 
@@ -51,4 +54,5 @@ clean:
 	@echo "Removing $(TARGET)"
 	rm -f $(TARGET)
 	rm -rf $(DIRECT)
+	rm -f $(TARGETCUDA)
 	rm -rf $(DIRECTV2)

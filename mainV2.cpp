@@ -433,38 +433,15 @@ void TestCase4(void)
 }
 
 int main(int argc, char * argv[]) 
-{
-    //RunSimpleTest();
-    //RunSimpleTest2();
-    //RunDiagonalSumTest();
-    //EntireTestCase();
-    //TestCase4();
-    //std::cout << "Running RunDiagonalOptimizedSumTest " << std::endl;
-    //RunDiagonalOptimizedSumTest();
-    //return 0;
-    //std::cout << "Rdfg " << std::endl;
-
-    //std::string lcTest = "v2GraphsSetTriangles/3.txt";
-
-    //TestCaseV2 Test(lcTest);
-    //Test.ComputeNumTriangles();
-    //std::cout << Test.GetNumTriangles() << std::endl;
-
-    
+{   
     std::vector<std::string> arguments(argv, argv + argc);
-	//std::vector<TestCaseV2> allTests;
-	//std::vector<std::string> outputFile;
-
 
     std::ofstream fileResult("resultCuda.txt");
 
-    //for (size_t i = 1; i < arguments.size(); i++) 
     std::cout << arguments.size() - 1 << std::endl;
     for (size_t i = 1; i < arguments.size(); i++) 
     {
 		std::string fileName = arguments.at(i);
-
-        //sleep(0.5);
 
         std::cout << fileName << std::endl;
 		
@@ -476,13 +453,7 @@ int main(int argc, char * argv[])
 
         fileResult << "fileName" << "," << fileName << ",";
         fileResult << "NumNodes" << "," << testCase.GetNodeSize() << ",";
-        //fileResult << "NumEdges" << "," << testCase.GetNumEdges() << ",";
         fileResult << "NumTriangles" << "," << testCase.GetNumTriangles() << ",";
-        //fileResult << "AdjBuildSetup" <<","<<lcTimingInformation.at(0) << ",";
-        //fileResult << "AdjBuild" <<","<<lcTimingInformation.at(1) << ",";
-        //fileResult << "AdjPower1" <<","<<lcTimingInformation.at(2) << ",";
-        //fileResult << "AdjPower2" <<","<<lcTimingInformation.at(3) << ",";
-        //fileResult << "DiagSum" <<","<<lcTimingInformation.at(4) << ",";
         fileResult << "ProgramTime" <<","<<lcTimingInformation.at(5) << ",";
         fileResult <<"\n";
 

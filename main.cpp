@@ -27,20 +27,11 @@ int main(int argc, char * argv[]) {
 
 		// Algorithms go here
 		auto start = chrono::high_resolution_clock::now();
-
-		/*
-		fileResult << "fileName" << "," << fileName << ",";
-        fileResult << "NumNodes" << "," << testCase.GetNodeSize() << ",";
-        fileResult << "NumTriangles" << "," << testCase.GetNumTriangles() << ",";
-        fileResult << "ProgramTime" <<","<<lcTimingInformation.at(5) << ",";
-        fileResult <<"\n";
-		*/
 		
 		lnNumTriangles = runNonGpuMatrxMulti(testCase);
 		auto stop = chrono::high_resolution_clock::now();
     	chrono::duration<double, std::milli> time = stop - start;
 		double timeTaken = time.count();
-		//outputFile.push_back("fileName" + "," + fileName + "," + "NumNodes" + "," + to_string(testCase.getNodeSize()) + "," + "NumTriangles" + "," + lnNumTriangles + + "," + "ProgramTime" + "," + to_string(timeTaken));
 		
 		std::stringstream lcStr;
 		lcStr << "fileName" << "," << fileName << ",";

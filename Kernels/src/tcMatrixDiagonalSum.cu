@@ -48,20 +48,16 @@ static __global__ void Kernel_SumDiagonalEntries_Optimized(const float* apnA, fl
 
     int lnThreadIdx = blockIdx.x*blockDim.x + threadIdx.x;
     int lnBatchIdx = lnThreadIdx;
-    //printf("BatchIDX %i \n", lnBatchIdx);
-
     float lrR = 0;
-
     int lnDiagEntry;
+    
     for(; lnThreadIdx < anNumSamples; lnThreadIdx+=anMaxReduceThreads)
     {
         lnDiagEntry = lnThreadIdx * (anNumSamples + 1);
         lrR += apnA[lnDiagEntry];
-        //printf("Sum %f, Entry Added %f, atDiagIdx %i \n", lrR, apnA[lnDiagEntry], lnDiagEntry);
     }
-    //printf("Writing to Shared Memory at %i with value %f \n", lnBatchIdx, lrR);
+
     lanShared[lnBatchIdx] = lrR;
-    //printf("SharedMemAt %i, Sum %f \n", lnBatchIdx, lrR);
 
     __syncthreads();
 
@@ -74,10 +70,8 @@ static __global__ void Kernel_SumDiagonalEntries_Optimized(const float* apnA, fl
         for(int lnIdx = 0; lnIdx < anMaxReduceThreads; lnIdx++)
         {
             lrR += lanShared[lnIdx];
-            //printf("SharedSum %f, SharedMemAt %i, is %f \n", lrR, lnIdx, lanShared[lnIdx]);
         }
         apnR[0] = lrR;
-        //printf("apnR[0] %f, lrR %f \n", apnR[0], lrR);
     }
 }
 
