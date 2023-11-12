@@ -1,5 +1,4 @@
 #include "../TestCase.h"
-#include "../Edge.h"
 #include <thread>
 #include <iostream>
 #include <vector>
@@ -41,27 +40,7 @@ void findMatrixCubed(const vector<vector<int>>& matrix, vector<vector<int>>& res
 }
 
 int runNonGpuMatrxMulti(const TestCase& graph) {
-    // REMOVE LATER
-    vector<int> testing(16);
-    testing.resize(4);
-    testing[0] = 0;
-    testing[1] = 1;
-    testing[2] = 1;
-    testing[3] = 1;
-    testing[4] = 1;
-    testing[5] = 0;
-    testing[6] = 1;
-    testing[7] = 0;
-    testing[8] = 1;
-    testing[9] = 1;
-    testing[10] = 0;
-    testing[11] = 1;
-    testing[12] = 1;
-    testing[13] = 0;
-    testing[14] = 1;
-    testing[15] = 0;
-
-    int nodeNum = 4;
+	int nodeNum = graph.adjMatrix.size();
 
     // prep result array
     vector<vector<int>> result(nodeNum);
@@ -75,17 +54,7 @@ int runNonGpuMatrxMulti(const TestCase& graph) {
         row.resize(nodeNum);
     }
 
-
-    // convert testcase's adjacency matrix representation
-    // into normal adjacency matrix
-    int graphArrayIndex = 0;
-    for(size_t i = 0; i < input.size(); i++) {
-        for(size_t j = 0; j < input.size(); j++) {
-            input[i][j] = testing[graphArrayIndex];
-            graphArrayIndex += 1;
-        }
-    }
-    findMatrixCubed(input, result);
+    findMatrixCubed(graph.adjMatrix, result);
 
     // sum up diagonals and divide by 6 for true triangle
     // number

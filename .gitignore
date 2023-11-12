@@ -9,6 +9,6 @@ pSparseFalse/
 pSparseTrue/
 v2GraphsDense/
 v2GraphsSparse/
-result.txt
+resultThreads.txt
 *.o
 *.a
