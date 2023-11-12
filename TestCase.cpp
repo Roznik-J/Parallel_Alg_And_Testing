@@ -9,11 +9,11 @@ using namespace std;
 
 TestCase::TestCase(string fileName) : fileName(fileName) {
     ifstream fileIn(fileName);
-    int numNodes, numEdges;
+    int numEdges;
     float sparsity;
 
     fileIn >> numNodes;
-    fileIn >> numEdges;
+    fileIn >> numEdges; // currently not useful to me
     fileIn >> sparsity; // currently not useful to me
 
     adjList.resize(numNodes);
@@ -52,4 +52,8 @@ void TestCase::printList() {
         }
         cout << endl;
     }
+}
+
+int TestCase::getNodeSize() {
+	return numNodes;
 }

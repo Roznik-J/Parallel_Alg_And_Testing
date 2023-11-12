@@ -17,9 +17,9 @@ NotValid:
 
 graphs:
 	@echo "Depreciated. Please use make graphsV2 instead"
-	# mkdir -p $(DIRECT)
-	# g++ -std=c++11 GraphGenerator.cpp -o $(TARGET)
-	# ./$(TARGET)
+	@# mkdir -p $(DIRECT)
+	@# g++ -std=c++11 GraphGenerator.cpp -o $(TARGET)
+	@# ./$(TARGET)
 
 graphsV2:
 	mkdir -p $(DIRECTV2)

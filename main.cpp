@@ -26,11 +26,10 @@ int main(int argc, char * argv[]) {
 		auto start = chrono::high_resolution_clock::now();
 		
 		runNonGpuMatrxMulti(testCase);
-		
 		auto stop = chrono::high_resolution_clock::now();
     	chrono::duration<double, std::milli> time = stop - start;
 		double timeTaken = time.count();
-		outputFile.push_back(fileName + ", " + to_string(timeTaken));
+		outputFile.push_back(fileName + ", " + to_string(testCase.getNodeSize()) + ", " + to_string(timeTaken));
 	}
 
 	for (size_t i = 0; i < outputFile.size(); i++)

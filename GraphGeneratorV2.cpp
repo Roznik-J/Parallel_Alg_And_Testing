@@ -89,7 +89,7 @@ void RandomGraphV2(int anNumNodes, float anSparsity)
 int main()
 {
 
-    for(int i = 5; i < 100; i++)
+    for(int i = 5; i < 200; i++)
     {
         RandomGraphV2(i,0.5);
         RandomGraphV2(i,1);
