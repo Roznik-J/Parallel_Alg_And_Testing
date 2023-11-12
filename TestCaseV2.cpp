@@ -54,7 +54,17 @@ TestCaseV2::TestCaseV2(std::string& arcFileName)
 
     cudaStreamCreate(&mcCudaStream);
 
+    CreateCudaEvents();
+
+    cudaEventRecord(mcStartProgram);
+
     ConstructAdjacencyMatrix();
+
+    ComputeNumTriangles();
+
+    cudaEventRecord(mcStopProgram);
+    cudaEventSynchronize(mcStopProgram);
+    cudaEventElapsedTime(&mrProgramTimeMS, mcStartProgram, mcStopProgram);
 
     // Debug Purposes Only, Expensive call!
     //printAdjacencyMatrix();
@@ -65,9 +75,14 @@ TestCaseV2::~TestCaseV2(void)
     cublasDestroy(mcCublasHandle);
     cudaStreamDestroy(mcCudaStream);
 
+    DestroyCudaEvents();
+
     cudaFree(mpvSourcesGpu);
     cudaFree(mpvDestGpu);
     cudaFree(mpvAdjGpu);
+    cudaFree(mpvAdj2Gpu);
+    cudaFree(mpvAdj3Gpu);
+    cudaFree(mpvDiagOutput);
 }
 
 void TestCaseV2::printEdges(void)
@@ -121,6 +136,8 @@ void TestCaseV2::ComputeNumTriangles(void)
     const float lcScaleFactor = 1;
     const float lcZeroFactor = 0;
 
+    cudaEventRecord(mcStartAdjPowerOne);
+
     int error = Kernel::Matrix::Multiply(mcCublasHandle, 
                              CUBLAS_OP_T,
                              CUBLAS_OP_T,
@@ -134,7 +151,13 @@ void TestCaseV2::ComputeNumTriangles(void)
                              static_cast<float*>(mpvAdj2Gpu),
                              mnNumNodes);
 
+    cudaEventRecord(mcStopAdjPowerOne);
+    cudaEventSynchronize(mcStopAdjPowerOne);
+    cudaEventElapsedTime(&mrAdjPowerOneMS, mcStartAdjPowerOne, mcStopAdjPowerOne);
+
     Kernel::Err::PrintError(error);
+
+    cudaEventRecord(mcStartAdjPowerTwo);
 
     error = Kernel::Matrix::Multiply(mcCublasHandle, 
                              CUBLAS_OP_T,
@@ -149,6 +172,10 @@ void TestCaseV2::ComputeNumTriangles(void)
                              static_cast<float*>(mpvAdj3Gpu),
                              mnNumNodes);
 
+    cudaEventRecord(mcStopAdjPowerTwo);
+    cudaEventSynchronize(mcStopAdjPowerTwo);
+    cudaEventElapsedTime(&mrAdjPowerTwoMS, mcStartAdjPowerTwo, mcStopAdjPowerTwo);
+
     Kernel::Err::PrintError(error);
 
     dim3 lsGridSize{};
@@ -157,8 +184,15 @@ void TestCaseV2::ComputeNumTriangles(void)
     int lnNumReduceThreads = std::ceil(std::sqrt(mnNumNodes));
     lsGridSize.x =std::ceil(static_cast<float>(lnNumReduceThreads)/lnThreadsPerBlock);
     lsBlockSize.x = lnNumReduceThreads;
+
+    cudaEventRecord(mcStartDiagSum);
+
     Kernel::Matrix::SumDiagonalsOptimized(lsGridSize,lsBlockSize, mcCudaStream,
                     mnNumNodes, static_cast<float*>(mpvAdj3Gpu), static_cast<float*>(mpvDiagOutput), lnNumReduceThreads);
+
+    cudaEventRecord(mcStopDiagSum);
+    cudaEventSynchronize(mcStopDiagSum);
+    cudaEventElapsedTime(&mrDiagSumMS, mcStartDiagSum, mcStopDiagSum);
 
     float* lpfRCpu = (float*)malloc(sizeof(float)*1);
     cudaMemcpyAsync(lpfRCpu, mpvDiagOutput, sizeof(float)*1, cudaMemcpyDeviceToHost, mcCudaStream);
@@ -183,9 +217,27 @@ int TestCaseV2::GetNodeSize(void)
     return mnNumNodes;
 }
 
+int TestCaseV2::GetNumEdges(void)
+{
+    return mnNumEdges;
+}
+
+void TestCaseV2::GetTimingInformation(std::vector<float>& arcTimeParameters)
+{
+    arcTimeParameters.clear();
+    arcTimeParameters.push_back(mrAdjBuildSetupMS);
+    arcTimeParameters.push_back(mcAdjBuildMS);
+    arcTimeParameters.push_back(mrAdjPowerOneMS);
+    arcTimeParameters.push_back(mrAdjPowerTwoMS);
+    arcTimeParameters.push_back(mrDiagSumMS);
+    arcTimeParameters.push_back(mrProgramTimeMS);
+}
+
 void TestCaseV2::ConstructAdjacencyMatrix(void)
 {
     int lnDataSize = mnNumNodes*mnNumNodes;
+
+    cudaEventRecord(mcStartAdjBuildSetup);
 
     cudaMalloc(&mpvSourcesGpu, sizeof(int)*lnDataSize);
     cudaMemcpyAsync(mpvSourcesGpu, mcSources.data(), sizeof(int)*lnDataSize, cudaMemcpyHostToDevice, mcCudaStream);
@@ -194,7 +246,11 @@ void TestCaseV2::ConstructAdjacencyMatrix(void)
     cudaMemcpyAsync(mpvDestGpu, mcDestinations.data(), sizeof(int)*lnDataSize, cudaMemcpyHostToDevice, mcCudaStream);
 
     cudaMalloc(&mpvAdjGpu, sizeof(int)*lnDataSize);
-    cudaMemset(mpvAdjGpu, 0, sizeof(int)*lnDataSize);
+    cudaMemsetAsync(mpvAdjGpu, 0, sizeof(int)*lnDataSize, mcCudaStream);
+
+    cudaEventRecord(mcStopAdjBuildSetup);
+    cudaEventSynchronize(mcStopAdjBuildSetup);
+    cudaEventElapsedTime(&mrAdjBuildSetupMS, mcStartAdjBuildSetup, mcStopAdjBuildSetup);
 
     dim3 lsGridSize{};
     dim3 lsBlockSize{};
@@ -203,8 +259,51 @@ void TestCaseV2::ConstructAdjacencyMatrix(void)
     int lnNumWarps = std::ceil((static_cast<float>(mnNumEdges)/lsGridSize.x)/snWarpSize);
     lsBlockSize.x = lnNumWarps*snWarpSize;
 
+    cudaEventRecord(mcStartAdjBuild);
+
     Kernel::Matrix::BuildAdjacencyMatrix(lsGridSize, lsBlockSize, mcCudaStream, mnNumEdges, mnNumNodes, 
                                          static_cast<int*>(mpvSourcesGpu), static_cast<int*>(mpvDestGpu), 
                                          static_cast<float*>(mpvAdjGpu));
 
+    cudaEventRecord(mcStopAdjBuild);
+    cudaEventSynchronize(mcStopAdjBuild);
+    cudaEventElapsedTime(&mcAdjBuildMS, mcStartAdjBuild, mcStopAdjBuild);
+
+}
+
+void TestCaseV2::CreateCudaEvents(void)
+{
+    cudaEventCreate(&mcStartAdjBuildSetup);
+    cudaEventCreate(&mcStopAdjBuildSetup);
+    cudaEventCreate(&mcStartAdjBuild);
+    cudaEventCreate(&mcStopAdjBuild);
+
+    cudaEventCreate(&mcStartAdjPowerOne);
+    cudaEventCreate(&mcStopAdjPowerOne);
+    cudaEventCreate(&mcStartAdjPowerTwo);
+    cudaEventCreate(&mcStopAdjPowerTwo);
+    cudaEventCreate(&mcStartDiagSum);
+    cudaEventCreate(&mcStopDiagSum);
+
+    cudaEventCreate(&mcStartProgram);
+    cudaEventCreate(&mcStopProgram);
+
+}
+
+void TestCaseV2::DestroyCudaEvents(void)
+{
+    cudaEventDestroy(mcStartAdjBuildSetup);
+    cudaEventDestroy(mcStopAdjBuildSetup);
+    cudaEventDestroy(mcStartAdjBuild);
+    cudaEventDestroy(mcStopAdjBuild);
+
+    cudaEventDestroy(mcStartAdjPowerOne);
+    cudaEventDestroy(mcStopAdjPowerOne);
+    cudaEventDestroy(mcStartAdjPowerTwo);
+    cudaEventDestroy(mcStopAdjPowerTwo);
+    cudaEventDestroy(mcStartDiagSum);
+    cudaEventDestroy(mcStopDiagSum);
+
+    cudaEventDestroy(mcStartProgram);
+    cudaEventDestroy(mcStopProgram);
 }
