@@ -154,12 +154,11 @@ void TestCaseV2::ComputeNumTriangles(void)
     dim3 lsGridSize{};
     dim3 lsBlockSize{};
     int lnThreadsPerBlock = 1024;
-    lsGridSize.x =std::ceil(static_cast<float>(mnNumNodes)/lnThreadsPerBlock);
-    int lnNumWarps = std::ceil((static_cast<float>(mnNumNodes)/lsGridSize.x)/snWarpSize);
-    lsBlockSize.x = lnNumWarps*snWarpSize;
-
-    Kernel::Matrix::SumDiagonals(lsGridSize, lsBlockSize, mcCudaStream,
-                    mnNumNodes, static_cast<float*>(mpvAdj3Gpu), static_cast<float*>(mpvDiagOutput));
+    int lnNumReduceThreads = std::ceil(std::sqrt(mnNumNodes));
+    lsGridSize.x =std::ceil(static_cast<float>(lnNumReduceThreads)/lnThreadsPerBlock);
+    lsBlockSize.x = lnNumReduceThreads;
+    Kernel::Matrix::SumDiagonalsOptimized(lsGridSize,lsBlockSize, mcCudaStream,
+                    mnNumNodes, static_cast<float*>(mpvAdj3Gpu), static_cast<float*>(mpvDiagOutput), lnNumReduceThreads);
 
     float* lpfRCpu = (float*)malloc(sizeof(float)*1);
     cudaMemcpyAsync(lpfRCpu, mpvDiagOutput, sizeof(float)*1, cudaMemcpyDeviceToHost, mcCudaStream);

@@ -245,6 +245,58 @@ void RunDiagonalSumTest(void)
 
 }
 
+void RunDiagonalOptimizedSumTest(void)
+{
+    std::cout << "RunDiagonalOptimizedSumTest" << std::endl;
+    //std::vector<float> A = {1,1,1,  2,5,1,  4,9,15};
+    std::vector<float>   A = {0,3,1,1,2,0,
+                              3,2,6,6,2,2,
+                              1,6,4,5,6,1,
+                              1,6,5,4,6,1,
+                              2,2,6,6,2,3,
+                              0,2,1,1,3,0};
+
+    int lnNumCols = 6;
+    int lnNumRows = 6;
+    int InputDataSize = lnNumCols * lnNumRows;
+
+    void* AGpu;
+    cudaMalloc(&AGpu, sizeof(float)*InputDataSize);
+    cudaMemcpy(AGpu, A.data(), sizeof(float)*InputDataSize, cudaMemcpyHostToDevice);
+
+    void* RGpu;
+    cudaMalloc(&RGpu, sizeof(float)*1);
+
+    cudaStream_t lcCudaStream;
+    cudaStreamCreate(&lcCudaStream);
+
+    dim3 lsGridSize{};
+    dim3 lsBlockSize{};
+    int lnThreadsPerBlock = 1024;
+    int lnNumReduceThreads = std::ceil(std::sqrt(lnNumCols));
+    std::cout << "Number Of Reduce Threads: " << lnNumReduceThreads << std::endl;
+    lsGridSize.x =std::ceil(static_cast<float>(lnNumReduceThreads)/lnThreadsPerBlock);
+    std::cout << "lsGridSize.x " << std::ceil(static_cast<float>(lnNumReduceThreads)/lnThreadsPerBlock) << std::endl;
+    int lnNumWarps = std::ceil((static_cast<float>(lnNumReduceThreads)/lsGridSize.x)/snWarpSize);
+    //lsBlockSize.x = lnNumWarps*snWarpSize;
+    lsBlockSize.x = lnNumReduceThreads;
+    std::cout << "lsBlockSize.x " << lnNumReduceThreads << std::endl;
+    std::cout << "lnNumCols" << lnNumCols << std::endl;
+    Kernel::Matrix::SumDiagonalsOptimized(lsGridSize,lsBlockSize, lcCudaStream,
+                    lnNumCols, static_cast<float*>(AGpu), static_cast<float*>(RGpu), lnNumReduceThreads);
+
+    float* lpfRCpu = (float*)malloc(sizeof(float)*1);
+    cudaMemcpy(lpfRCpu, RGpu, sizeof(float)*1, cudaMemcpyDeviceToHost);
+
+    std::cout << "Value : " << *lpfRCpu << std::endl;
+
+    cudaFree(AGpu);
+    cudaFree(RGpu);
+    free(lpfRCpu);
+    std::cout << "Done with RunDiagonalOptimizedSumTest" << std::endl;
+
+}
+
 int GetNum3Cycles(void* apnA, int anNumNodes)
 {
     void* AGpu;
@@ -385,6 +437,10 @@ int main(int argc, char * argv[])
     //RunDiagonalSumTest();
     //EntireTestCase();
     //TestCase4();
+    //std::cout << "Running RunDiagonalOptimizedSumTest " << std::endl;
+    //RunDiagonalOptimizedSumTest();
+    //return 0;
+    //std::cout << "Rdfg " << std::endl;
 
     //std::string lcTest = "v2GraphsSetTriangles/3.txt";
 
@@ -392,6 +448,7 @@ int main(int argc, char * argv[])
     //Test.ComputeNumTriangles();
     //std::cout << Test.GetNumTriangles() << std::endl;
 
+    
     std::vector<std::string> arguments(argv, argv + argc);
 	std::vector<TestCaseV2> allTests;
 	std::vector<std::string> outputFile;
@@ -424,5 +481,6 @@ int main(int argc, char * argv[])
 
 	std::cout << "Done" << std::endl;
 	return 0;
+    
 
 }
