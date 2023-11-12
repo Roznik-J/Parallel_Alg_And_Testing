@@ -8,7 +8,7 @@ FILES = $(wildcard nNotSparseFalse/*.txt) $(wildcard nNotSparseTrue/*.txt) $(wil
 
 DIRECT = nNotSparseFalse nNotSparseTrue nSparseFalse nSparseTrue pNotSparseFalse pNotSparseTrue pSparseFalse pSparseTrue
 
-DIRECTV2 = v2GraphsSparse v2GraphsDense
+DIRECTV2 = v2GraphsSparse v2GraphsDense v2GraphsSetTriangles
 
 NotValid:
 	@echo "Please specificy graphs, main, run, or clean."

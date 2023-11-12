@@ -9,6 +9,7 @@ pSparseFalse/
 pSparseTrue/
 v2GraphsDense/
 v2GraphsSparse/
+v2GraphsSetTriangles/
 result.txt
 *.o
 *.a

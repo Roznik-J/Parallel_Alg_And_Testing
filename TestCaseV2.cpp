@@ -190,6 +190,7 @@ void TestCaseV2::ConstructAdjacencyMatrix(void)
     cudaMemcpyAsync(mpvDestGpu, mcDestinations.data(), sizeof(int)*lnDataSize, cudaMemcpyHostToDevice, mcCudaStream);
 
     cudaMalloc(&mpvAdjGpu, sizeof(int)*lnDataSize);
+    cudaMemset(mpvAdjGpu, 0, sizeof(int)*lnDataSize);
 
     dim3 lsGridSize{};
     dim3 lsBlockSize{};

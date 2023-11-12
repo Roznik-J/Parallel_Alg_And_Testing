@@ -86,6 +86,36 @@ void RandomGraphV2(int anNumNodes, float anSparsity)
 
 }
 
+// Generates graphs with a set number of triangles
+void TriangleGraph(int anNumNodes, int anNumTriangles)
+{
+    std::set<std::pair<int,int>> edges;
+    // Generate a series of edges such that 0->1->2->...->n
+    for(int lnIdx = 0; lnIdx < (anNumNodes - 1); lnIdx++)
+    {
+        std::pair<int, int> lcEdge = {lnIdx, lnIdx+1};
+        edges.insert(lcEdge);
+    }
+    // Add a series of edges which form triangles
+    for(int lnIdx = 0; lnIdx < anNumTriangles; lnIdx++)
+    {
+        std::pair<int, int> lcEdge = {lnIdx, lnIdx+2};
+        edges.insert(lcEdge);
+    }
+    std::string lcFileName;
+    lcFileName = "v2GraphsSetTriangles/" + std::string(std::to_string(anNumTriangles)) + ".txt";
+    std::ofstream file(lcFileName);
+    file << anNumNodes << std::endl;
+	file << edges.size() << std::endl;
+    file << anNumTriangles << std::endl;
+    for(std::pair<int, int> lcObject : edges)
+    {
+        file << lcObject.first << " " << lcObject.second << std::endl;
+    }
+    file.flush();
+	file.close();
+}
+
 int main()
 {
 
@@ -93,6 +123,10 @@ int main()
     {
         RandomGraphV2(i,0.5);
         RandomGraphV2(i,1);
+    }
+    for(int i = 0; i < 50; i++)
+    {
+        TriangleGraph(60, i);
     }
 	return 0;
 }
