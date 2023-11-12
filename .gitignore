@@ -7,6 +7,8 @@ pNotSparseFalse/
 pNotSparseTrue/
 pSparseFalse/
 pSparseTrue/
+v2GraphsDense/
+v2GraphsSparse/
 result.txt
 *.o
 *.a

@@ -311,6 +311,7 @@ int GetNum3Cycles(void* apnA, int anNumNodes)
     cudaFree(A2Gpu);
     cudaFree(A3Gpu);
     cudaFree(DiagGpu);
+    free(lpfRCpu);
 
     return lnNumCycles;
 }

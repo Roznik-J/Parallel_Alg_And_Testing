@@ -8,12 +8,19 @@ FILES = $(wildcard nNotSparseFalse/*.txt) $(wildcard nNotSparseTrue/*.txt) $(wil
 
 DIRECT = nNotSparseFalse nNotSparseTrue nSparseFalse nSparseTrue pNotSparseFalse pNotSparseTrue pSparseFalse pSparseTrue
 
+DIRECTV2 = v2GraphsSparse v2GraphsDense
+
 NotValid:
 	@echo "Please specificy graphs, main, run, or clean."
 
 graphs:
 	mkdir -p $(DIRECT)
 	g++ -std=c++11 GraphGenerator.cpp -o $(TARGET)
+	./$(TARGET)
+
+graphsV2:
+	mkdir -p $(DIRECTV2)
+	g++ -std=c++11 GraphGeneratorV2.cpp -o $(TARGET)
 	./$(TARGET)
 
 main: Kernels/libkernels.a TestCase.cpp
@@ -30,3 +37,4 @@ clean:
 	@echo "Removing $(TARGET)"
 	rm -f $(TARGET)
 	rm -rf $(DIRECT)
+	rm -rf $(DIRECTV2)
