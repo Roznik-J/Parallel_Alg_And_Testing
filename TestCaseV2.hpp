@@ -31,6 +31,8 @@ public:
 
     int GetNumTriangles(void);
 
+    int GetNodeSize(void);
+
 private:
 
     void ConstructAdjacencyMatrix(void);

@@ -45,8 +45,8 @@ TestCaseV2::TestCaseV2(std::string& arcFileName)
     fileIn.close();
 
     // Debug only, remove later
-    printEdges();
-    printGraphInfo();
+    //printEdges();
+    //printGraphInfo();
 
     auto handlereturn = cublasCreate(&mcCublasHandle);
     Kernel::Err::GetError(handlereturn);
@@ -57,7 +57,7 @@ TestCaseV2::TestCaseV2(std::string& arcFileName)
     ConstructAdjacencyMatrix();
 
     // Debug Purposes Only, Expensive call!
-    printAdjacencyMatrix();
+    //printAdjacencyMatrix();
 }
 
 TestCaseV2::~TestCaseV2(void)
@@ -168,7 +168,7 @@ void TestCaseV2::ComputeNumTriangles(void)
 
     mnNumTriangles = (int)((*lpfRCpu)/6);
 
-    std::cout << "Number of Triangles : " << mnNumTriangles << std::endl;
+    std::cout << "Number of Found Triangles : " << mnNumTriangles << " Number of Expected Triangles " << mrSparsity << std::endl;
     
     free(lpfRCpu);
 
@@ -177,6 +177,11 @@ void TestCaseV2::ComputeNumTriangles(void)
 int TestCaseV2::GetNumTriangles(void)
 {
     return mnNumTriangles;
+}
+
+int TestCaseV2::GetNodeSize(void)
+{
+    return mnNumNodes;
 }
 
 void TestCaseV2::ConstructAdjacencyMatrix(void)

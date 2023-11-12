@@ -4,6 +4,8 @@ LDFLAGS = -L./Kernels -lkernels
 
 TARGET = output
 
+TARGETCUDA = outputCUDA
+
 FILES = $(wildcard nNotSparseFalse/*.txt) $(wildcard nNotSparseTrue/*.txt) $(wildcard nSparseFalse/*.txt) $(wildcard nSparseTrue/*.txt) $(wildcard pNotSparseFalse/*.txt) $(wildcard pNotSparseTrue/*.txt) $(wildcard pSparseFalse/*.txt) $(wildcard pSparseTrue/*.txt)
 
 DIRECT = nNotSparseFalse nNotSparseTrue nSparseFalse nSparseTrue pNotSparseFalse pNotSparseTrue pSparseFalse pSparseTrue
@@ -11,6 +13,8 @@ DIRECT = nNotSparseFalse nNotSparseTrue nSparseFalse nSparseTrue pNotSparseFalse
 DIRECTV2 = v2GraphsSparse v2GraphsDense v2GraphsSetTriangles
 
 FILESV2 = $(wildcard v2GraphsSparse/*.txt) $(wildcard v2GraphsDense/*.txt)
+
+FILESCALIBRATED = $(wildcard v2GraphsSetTriangles/*.txt)
 
 NotValid:
 	@echo "Please specificy graphsV2, main, mainV2, run, or clean."
@@ -30,10 +34,16 @@ main: TestCase.cpp NonGpuAlgorithms/MatrixMultiplication.cpp
 	g++ -std=c++17 main.cpp $(CFLAGS) TestCase.cpp -o $(TARGET) NonGpuAlgorithms/MatrixMultiplication.cpp
 
 mainV2: Kernels/libkernels.a TestCaseV2.cpp
-	g++ -std=c++17 mainV2.cpp $(CFLAGS) TestCaseV2.cpp -I./Kernels/inc -I/usr/local/cuda/include -o $(TARGET) -L./Kernels -L/usr/local/cuda/lib64 -lkernels -lcudart -lcuda -lcublas -Wl,-rpath=./Kernels
+	g++ -std=c++17 mainV2.cpp $(CFLAGS) TestCaseV2.cpp -I./Kernels/inc -I/usr/local/cuda/include -o $(TARGETCUDA) -L./Kernels -L/usr/local/cuda/lib64 -lkernels -lcudart -lcuda -lcublas -Wl,-rpath=./Kernels
 
 run: 
 	@./$(TARGET) $(FILESV2)
+
+runcuda: 
+	@./$(TARGETCUDA) $(FILESV2)
+
+runcudaCal: 
+	@./$(TARGETCUDA) $(FILESCALIBRATED)
 
 
 clean:

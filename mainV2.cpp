@@ -14,6 +14,8 @@
 #include <tcMatrixDiagonalSum.hpp>
 #include "TestCaseV2.hpp"
 
+#include <chrono>
+
 static const int snWarpSize = 32;
 
 //#include "cublas_v2.h"
@@ -384,12 +386,43 @@ int main(int argc, char * argv[])
     //EntireTestCase();
     //TestCase4();
 
-    std::string lcTest = "v2GraphsSparse/5.txt";
+    //std::string lcTest = "v2GraphsSetTriangles/3.txt";
 
-    TestCaseV2 Test(lcTest);
-    Test.ComputeNumTriangles();
-    std::cout << Test.GetNumTriangles() << std::endl;
+    //TestCaseV2 Test(lcTest);
+    //Test.ComputeNumTriangles();
+    //std::cout << Test.GetNumTriangles() << std::endl;
 
-    return 0;
+    std::vector<std::string> arguments(argv, argv + argc);
+	std::vector<TestCaseV2> allTests;
+	std::vector<std::string> outputFile;
+    std::ofstream fileResult("resultCuda.txt");
+
+    for (size_t i = 1; i < arguments.size(); i++) {
+		std::string fileName = arguments.at(i);
+		
+		// build test case graph
+		TestCaseV2 testCase(fileName);
+
+		// Algorithms go here
+		auto start = std::chrono::high_resolution_clock::now();
+		
+		//runNonGpuMatrxMulti(testCase);
+        testCase.ComputeNumTriangles();
+		auto stop = std::chrono::high_resolution_clock::now();
+    	std::chrono::duration<double, std::milli> time = stop - start;
+		double timeTaken = time.count();
+		outputFile.push_back(fileName + ", " + std::to_string(testCase.GetNodeSize()) + ", " + std::to_string(timeTaken));
+	}
+
+    for (size_t i = 0; i < outputFile.size(); i++)
+	{
+		fileResult<<outputFile[i]<<std::endl;
+	}
+
+	fileResult << std::flush;
+	fileResult.close();
+
+	std::cout << "Done" << std::endl;
+	return 0;
 
 }
