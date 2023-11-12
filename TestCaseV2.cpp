@@ -1,3 +1,10 @@
+//*****************************************************
+// Developed by J. Roznik
+// 2023-11-11
+// Test Case class that handles Graph Testing with Cuda
+//*****************************************************
+
+
 #include "TestCaseV2.hpp"
 
 #include <iostream>

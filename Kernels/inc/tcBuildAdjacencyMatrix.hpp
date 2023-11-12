@@ -1,7 +1,8 @@
 //*****************************************************
 // Developed by J. Roznik
 // 2023-11-11
-// Sums the Diagonals of a Matrix
+// Generates the Adjacency Matrix from a list of
+// sources and destinations
 //*****************************************************
 
 #ifndef TCBUILDADJANCENCYMATRIX_HPP_

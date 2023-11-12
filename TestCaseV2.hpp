@@ -1,3 +1,9 @@
+//*****************************************************
+// Developed by J. Roznik
+// 2023-11-11
+// Test Case class that handles Graph Testing with Cuda
+//*****************************************************
+
 #ifndef TESTCASEV2_HPP
 #define TESTCASEV2_HPP
 
