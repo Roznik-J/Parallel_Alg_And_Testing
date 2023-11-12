@@ -10,27 +10,30 @@ DIRECT = nNotSparseFalse nNotSparseTrue nSparseFalse nSparseTrue pNotSparseFalse
 
 DIRECTV2 = v2GraphsSparse v2GraphsDense v2GraphsSetTriangles
 
+FILESV2 = $(wildcard v2GraphsSparse/*.txt) $(wildcard v2GraphsDense/*.txt)
+
 NotValid:
-	@echo "Please specificy graphs, main, run, or clean."
+	@echo "Please specificy graphsV2, main, mainV2, run, or clean."
 
 graphs:
-	mkdir -p $(DIRECT)
-	g++ -std=c++11 GraphGenerator.cpp -o $(TARGET)
-	./$(TARGET)
+	@echo "Depreciated. Please use make graphsV2 instead"
+	@# mkdir -p $(DIRECT)
+	@# g++ -std=c++11 GraphGenerator.cpp -o $(TARGET)
+	@# ./$(TARGET)
 
 graphsV2:
 	mkdir -p $(DIRECTV2)
 	g++ -std=c++11 GraphGeneratorV2.cpp -o $(TARGET)
 	./$(TARGET)
 
-main: Kernels/libkernels.a TestCase.cpp
-	g++ -std=c++17 main.cpp $(CFLAGS) TestCase.cpp -I./Kernels/inc -I/usr/local/cuda/include -o $(TARGET) -L./Kernels -L/usr/local/cuda/lib64 -lkernels -lcudart -lcuda -Wl,-rpath=./Kernels NonGpuAlgorithms/MatrixMultiplication.cpp
+main: TestCase.cpp NonGpuAlgorithms/MatrixMultiplication.cpp
+	g++ -std=c++17 main.cpp $(CFLAGS) TestCase.cpp -o $(TARGET) NonGpuAlgorithms/MatrixMultiplication.cpp
 
 mainV2: Kernels/libkernels.a TestCaseV2.cpp
 	g++ -std=c++17 mainV2.cpp $(CFLAGS) TestCaseV2.cpp -I./Kernels/inc -I/usr/local/cuda/include -o $(TARGET) -L./Kernels -L/usr/local/cuda/lib64 -lkernels -lcudart -lcuda -lcublas -Wl,-rpath=./Kernels
 
 run: 
-	@./$(TARGET) $(FILES)
+	@./$(TARGET) $(FILESV2)
 
 
 clean:

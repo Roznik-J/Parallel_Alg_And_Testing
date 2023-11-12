@@ -11,5 +11,6 @@ v2GraphsDense/
 v2GraphsSparse/
 v2GraphsSetTriangles/
 result.txt
+resultThreads.txt
 *.o
 *.a
