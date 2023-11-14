@@ -119,14 +119,20 @@ void TriangleGraph(int anNumNodes, int anNumTriangles)
 int main()
 {
 
-    for(int i = 5; i < 200; i++)
+    //for(int i = 5; i < 200; i++)
+    //{
+    //    RandomGraphV2(i,0.5);
+    //    RandomGraphV2(i,1);
+    //}
+    //for(int i = 0; i < 200; i++)
+    //{
+    //    TriangleGraph(300, i);
+    //}
+    TriangleGraph(10, 0);
+    //for(int i = 100; i <= 10000; i+=100)
+    for(int i = 100; i <= 10000; i+=100)
     {
-        RandomGraphV2(i,0.5);
-        RandomGraphV2(i,1);
-    }
-    for(int i = 0; i < 50; i++)
-    {
-        TriangleGraph(60, i);
+        TriangleGraph(i, i-2);
     }
 	return 0;
 }

@@ -439,23 +439,34 @@ int main(int argc, char * argv[])
     std::ofstream fileResult("resultCuda.txt");
 
     std::cout << arguments.size() - 1 << std::endl;
-    for (size_t i = 1; i < arguments.size(); i++) 
+    for (int i = 1; i < arguments.size(); i++) 
     {
 		std::string fileName = arguments.at(i);
 
-        std::cout << fileName << std::endl;
+        //std::cout << fileName << std::endl;
+
+        std::cout << "Running Test Case " << fileName << " "<< i<< std::endl;
 		
 		// build test case graph
 		TestCaseV2 testCase(fileName);
 
+        //sleep(1);
+        //usleep(500000); 
+
+        //std::cout << " Finished Running test case ";
+
         std::vector<float> lcTimingInformation;
         testCase.GetTimingInformation(lcTimingInformation);
+
+        //std::cout << " Got Timing Info ";
 
         fileResult << "fileName" << "," << fileName << ",";
         fileResult << "NumNodes" << "," << testCase.GetNodeSize() << ",";
         fileResult << "NumTriangles" << "," << testCase.GetNumTriangles() << ",";
         fileResult << "ProgramTime" <<","<<lcTimingInformation.at(5) << ",";
         fileResult <<"\n";
+
+        //std::cout << " Wrote to File " << std::endl;
 
 	}
 

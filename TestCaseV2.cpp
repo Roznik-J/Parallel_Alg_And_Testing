@@ -30,7 +30,7 @@ TestCaseV2::TestCaseV2(std::string& arcFileName)
     if(!fileIn)
     {
         std::cout << "Not A File" << std::endl;
-        return;
+        throw std::runtime_error("error");
     }
 
     fileIn >> mnNumNodes;
@@ -44,8 +44,26 @@ TestCaseV2::TestCaseV2(std::string& arcFileName)
         fileIn >> lnSrc;
         fileIn >> lnDst;
 
+        if(lnSrc == -1 || lnDst == -1)
+        {
+            std::cout << "BAD DATA: " << lnSrc << " " << lnDst;
+        }
+
+        if(lnSrc >= mnNumNodes || lnDst >= mnNumNodes)
+        {
+            std::cout << "BAD DATA: " << lnSrc << " " << lnDst;
+        }
+
+        if(lnSrc < 0 || lnDst < 0)
+        {
+            std::cout << "BAD DATA: " << lnSrc << " " << lnDst;
+        }
+
         mcSources.push_back(lnSrc);
         mcDestinations.push_back(lnDst);
+
+        lnSrc = -1;
+        lnDst = -1;
     }
 
     fileIn.close();
@@ -69,7 +87,9 @@ TestCaseV2::TestCaseV2(std::string& arcFileName)
     ComputeNumTriangles();
 
     cudaEventRecord(mcStopProgram);
+
     cudaEventSynchronize(mcStopProgram);
+
     cudaEventElapsedTime(&mrProgramTimeMS, mcStartProgram, mcStopProgram);
 
     // Debug Purposes Only, Expensive call!
@@ -78,7 +98,10 @@ TestCaseV2::TestCaseV2(std::string& arcFileName)
 
 TestCaseV2::~TestCaseV2(void)
 {
-    cublasDestroy(mcCublasHandle);
+    auto handlereturn = cublasDestroy(mcCublasHandle);
+    Kernel::Err::GetError(handlereturn);
+    Kernel::Err::PrintError(handlereturn);
+
     cudaStreamDestroy(mcCudaStream);
 
     DestroyCudaEvents();
@@ -89,6 +112,7 @@ TestCaseV2::~TestCaseV2(void)
     cudaFree(mpvAdj2Gpu);
     cudaFree(mpvAdj3Gpu);
     cudaFree(mpvDiagOutput);
+
 }
 
 void TestCaseV2::printEdges(void)
@@ -138,6 +162,11 @@ void TestCaseV2::ComputeNumTriangles(void)
     cudaMalloc(&mpvAdj3Gpu, sizeof(float)*InputDataSize);
 
     cudaMalloc(&mpvDiagOutput, sizeof(float)*1);
+
+    if(mpvAdjGpu == nullptr || mpvAdj2Gpu == nullptr || mpvAdj3Gpu==nullptr || mpvDiagOutput==nullptr)
+    {
+        throw std::runtime_error("error");
+    }
 
     const float lcScaleFactor = 1;
     const float lcZeroFactor = 0;
@@ -202,12 +231,9 @@ void TestCaseV2::ComputeNumTriangles(void)
 
     float* lpfRCpu = (float*)malloc(sizeof(float)*1);
     cudaMemcpyAsync(lpfRCpu, mpvDiagOutput, sizeof(float)*1, cudaMemcpyDeviceToHost, mcCudaStream);
-
     cudaStreamSynchronize(mcCudaStream);
 
     mnNumTriangles = (int)((*lpfRCpu)/6);
-
-    //std::cout << "Number of Found Triangles : " << mnNumTriangles << " Number of Expected Triangles " << mrSparsity << std::endl;
     
     free(lpfRCpu);
 
@@ -246,13 +272,23 @@ void TestCaseV2::ConstructAdjacencyMatrix(void)
     //cudaEventRecord(mcStartAdjBuildSetup);
 
     cudaMalloc(&mpvSourcesGpu, sizeof(int)*lnDataSize);
-    cudaMemcpyAsync(mpvSourcesGpu, mcSources.data(), sizeof(int)*lnDataSize, cudaMemcpyHostToDevice, mcCudaStream);
+    cudaMemsetAsync(mpvSourcesGpu, 0, sizeof(int)*lnDataSize, mcCudaStream);
+    cudaMemcpyAsync(mpvSourcesGpu, mcSources.data(), sizeof(int)*mcSources.size(), cudaMemcpyHostToDevice, mcCudaStream);
 
     cudaMalloc(&mpvDestGpu, sizeof(int)*lnDataSize);
-    cudaMemcpyAsync(mpvDestGpu, mcDestinations.data(), sizeof(int)*lnDataSize, cudaMemcpyHostToDevice, mcCudaStream);
+    cudaMemsetAsync(mpvDestGpu, 0, sizeof(int)*lnDataSize, mcCudaStream);
+
+    cudaMemcpyAsync(mpvDestGpu, mcDestinations.data(), sizeof(int)*mcDestinations.size(), cudaMemcpyHostToDevice, mcCudaStream);
 
     cudaMalloc(&mpvAdjGpu, sizeof(int)*lnDataSize);
+
     cudaMemsetAsync(mpvAdjGpu, 0, sizeof(int)*lnDataSize, mcCudaStream);
+
+
+    if(mpvSourcesGpu == nullptr || mpvDestGpu == nullptr || mpvAdjGpu==nullptr)
+    {
+        throw std::runtime_error("error");
+    }
 
     //cudaEventRecord(mcStopAdjBuildSetup);
     //cudaEventSynchronize(mcStopAdjBuildSetup);
@@ -293,7 +329,6 @@ void TestCaseV2::CreateCudaEvents(void)
 
     cudaEventCreate(&mcStartProgram);
     cudaEventCreate(&mcStopProgram);
-
 }
 
 void TestCaseV2::DestroyCudaEvents(void)
@@ -312,4 +347,5 @@ void TestCaseV2::DestroyCudaEvents(void)
 
     cudaEventDestroy(mcStartProgram);
     cudaEventDestroy(mcStopProgram);
+    
 }

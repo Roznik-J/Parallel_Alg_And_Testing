@@ -9,6 +9,7 @@
 
 #include "cublas_v2.h"
 #include <cuda_runtime_api.h>
+#include <iostream>
 
 namespace Kernel
 {
@@ -23,6 +24,7 @@ namespace Err
 {
     int GetError(cublasStatus_t error);
     void PrintError(int anErr);
+    void PrintCudaError(std::string& arcMsg, int anErr);
 }
 }
 

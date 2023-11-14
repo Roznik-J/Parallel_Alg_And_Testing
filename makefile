@@ -16,6 +16,8 @@ FILESV2 = $(wildcard v2GraphsSparse/*.txt) $(wildcard v2GraphsDense/*.txt)
 
 FILESCALIBRATED = $(wildcard v2GraphsSetTriangles/*.txt)
 
+VALGRIND_FLAGS = --tool=valgrind --leak-check=full
+
 NotValid:
 	@echo "Please specificy graphsV2, main, mainV2, run, or clean."
 
@@ -49,6 +51,11 @@ runcuda:
 runcudaCal: 
 	@./$(TARGETCUDA) $(FILESCALIBRATED)
 
+#valgrind: mainV2
+#    valgrind $(VALGRIND_FLAGS) ./$(TARGETCUDA)
+
+valgrind:
+		valgrind ./$(TARGETCUDA) $(FILESCALIBRATED)
 
 clean:
 	@echo "Removing $(TARGET)"
@@ -56,3 +63,6 @@ clean:
 	rm -rf $(DIRECT)
 	rm -f $(TARGETCUDA)
 	rm -rf $(DIRECTV2)
+
+
+#.PHONY: valgrind
