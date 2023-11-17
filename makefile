@@ -1,5 +1,5 @@
 #makefile
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall -O2
 LDFLAGS = -L./Kernels -lkernels
 
 TARGET = output
@@ -20,12 +20,6 @@ VALGRIND_FLAGS = --tool=valgrind --leak-check=full
 
 NotValid:
 	@echo "Please specificy graphsV2, main, mainV2, run, or clean."
-
-graphs:
-	@echo "Depreciated. Please use make graphsV2 instead"
-	@# mkdir -p $(DIRECT)
-	@# g++ -std=c++11 GraphGenerator.cpp -o $(TARGET)
-	@# ./$(TARGET)
 
 graphsV2:
 	mkdir -p $(DIRECTV2)

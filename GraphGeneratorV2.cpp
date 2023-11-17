@@ -128,9 +128,9 @@ int main()
     //{
     //    TriangleGraph(300, i);
     //}
-    TriangleGraph(10, 0);
+    //TriangleGraph(10, 0);
     //for(int i = 100; i <= 10000; i+=100)
-    for(int i = 100; i <= 10000; i+=100)
+    for(int i = 10; i <= 1000; i+=10)
     {
         TriangleGraph(i, i-2);
     }

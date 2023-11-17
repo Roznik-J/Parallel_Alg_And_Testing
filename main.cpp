@@ -19,9 +19,13 @@ int main(int argc, char * argv[]) {
 
 	for (size_t i = 1; i < arguments.size(); i++) {
 		string fileName = arguments.at(i);
+
+		std::cout << "running : " << fileName << std::endl;
 		
 		// build test case graph
 		TestCase testCase(fileName);
+
+		std::cout << "DoneWith : " << fileName << std::endl;
 
 		int lnNumTriangles = 0;
 
