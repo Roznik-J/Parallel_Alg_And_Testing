@@ -4,8 +4,8 @@
 // Test Case class that handles Graph Testing with Cuda
 //*****************************************************
 
-#ifndef TESTCASEV2_HPP
-#define TESTCASEV2_HPP
+#ifndef TESTCASE_HPP
+#define TESTCASE_HPP
 
 #include <vector>
 #include <string>

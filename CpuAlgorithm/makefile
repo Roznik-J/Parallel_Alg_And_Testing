@@ -28,7 +28,7 @@ FILES = $(wildcard ../GraphsSparse/*.txt) $(wildcard ../GraphsDense/*.txt)
 FILESCALIBRATED = $(wildcard ../GraphsSetTriangles/*.txt)
 
 NotValid:
-	@echo "Please specificy graphsV2, main, mainV2, run, or clean."
+	@echo "Please specificy main, run, runCal, or clean."
 
 main: TestCase.cpp MatrixMultiplication.cpp
 	g++ -std=c++17 main.cpp $(CFLAGS) TestCase.cpp -o $(TARGET) MatrixMultiplication.cpp

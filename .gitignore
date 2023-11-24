@@ -5,6 +5,7 @@ GraphsSparse/
 GraphsSetTriangles/
 GraphGenerator/GenerateGraphs
 CpuAlgorithm/CpuAlgorithm
+CudaAlgorithm/CudaImplementation
 result.txt
 resultThreads.txt
 resultCuda.txt

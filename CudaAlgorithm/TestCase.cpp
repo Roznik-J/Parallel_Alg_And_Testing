@@ -5,7 +5,7 @@
 //*****************************************************
 
 
-#include "TestCaseV2.hpp"
+#include "TestCase.hpp"
 
 #include <iostream>
 #include <fstream>

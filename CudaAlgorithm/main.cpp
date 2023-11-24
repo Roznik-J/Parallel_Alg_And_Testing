@@ -12,7 +12,7 @@
 
 #include <tcMatrixMultiply.hpp>
 #include <tcMatrixDiagonalSum.hpp>
-#include "TestCaseV2.hpp"
+#include "TestCase.hpp"
 
 #include <unistd.h>
 
