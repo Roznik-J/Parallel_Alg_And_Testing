@@ -7,6 +7,8 @@
 #include <fstream>
 #include <chrono>
 #include <sstream>
+#include <ctime>
+#include <iomanip>
 
 using namespace std;
 
@@ -15,7 +17,20 @@ int main(int argc, char * argv[]) {
 	vector<TestCase> allTests;
 	vector<string> outputFile;
 
-	ofstream fileResult("resultThreads.txt");
+	std::time_t now = std::time(nullptr);
+    std::tm* timeinfo = std::localtime(&now);
+    
+    std::ostringstream oss;
+    oss << "resultThreads";
+    oss << std::setfill('0') << std::setw(2) << timeinfo->tm_mon + 1 << '-'
+        << std::setw(2) << timeinfo->tm_mday << '-'
+        << std::setw(2) << (timeinfo->tm_year + 1900) % 100 << '_'
+        << std::setw(2) << timeinfo->tm_hour << ':'
+        << std::setw(2) << timeinfo->tm_min << ":"
+        << std::setw(2) << timeinfo->tm_sec;
+    oss << ".txt";
+
+	ofstream fileResult(oss.str().c_str());
 
 	for (size_t i = 1; i < arguments.size(); i++) {
 		string fileName = arguments.at(i);

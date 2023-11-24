@@ -8,6 +8,7 @@
 # >make run; to run CPU implementation with graphs.
 # >make runCal; to run CPU implementation with
 #     calibrated graphs.
+# >make saveResults; move results to the Results/Data folder
 # >make clean; remove binary
 #
 # History:
@@ -28,7 +29,7 @@ FILES = $(wildcard ../GraphsSparse/*.txt) $(wildcard ../GraphsDense/*.txt)
 FILESCALIBRATED = $(wildcard ../GraphsSetTriangles/*.txt)
 
 NotValid:
-	@echo "Please specificy main, run, runCal, or clean."
+	@echo "Please specificy main, run, runCal, saveResults, or clean."
 
 main: TestCase.cpp MatrixMultiplication.cpp
 	g++ -std=c++17 main.cpp $(CFLAGS) TestCase.cpp -o $(TARGET) MatrixMultiplication.cpp
@@ -38,6 +39,9 @@ run:
 
 runCal:
 	@./$(TARGET) $(FILESCALIBRATED)
+
+saveResults: 
+	@mv resultThreads* ../Results/Data
 
 clean:
 	@echo "Removing $(TARGET)"

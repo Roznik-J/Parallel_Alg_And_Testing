@@ -16,6 +16,10 @@
 
 #include <unistd.h>
 
+#include <ctime>
+#include <iomanip>
+#include <sstream>
+
 #include <chrono>
 
 static const int snWarpSize = 32;
@@ -436,7 +440,27 @@ int main(int argc, char * argv[])
 {   
     std::vector<std::string> arguments(argv, argv + argc);
 
-    std::ofstream fileResult("resultCuda.txt");
+    std::time_t now = std::time(nullptr);
+    std::tm* timeinfo = std::localtime(&now);
+    
+    std::ostringstream oss;
+    oss << "resultCuda_";
+    oss << std::setfill('0') << std::setw(2) << timeinfo->tm_mon + 1 << '-'
+        << std::setw(2) << timeinfo->tm_mday << '-'
+        << std::setw(2) << (timeinfo->tm_year + 1900) % 100 << '_'
+        << std::setw(2) << timeinfo->tm_hour << ':'
+        << std::setw(2) << timeinfo->tm_min << ":"
+        << std::setw(2) << timeinfo->tm_sec;
+    oss << ".txt";
+
+    std::ofstream fileResult(oss.str().c_str());
+
+    if (fileResult.fail())
+    {
+        std::cout << "Failed to create file: " << oss.str() << std::endl;
+    }
+
+    std::cout << oss.str() << std::endl;
 
     std::cout << arguments.size() - 1 << std::endl;
     for (int i = 1; i < arguments.size(); i++) 

@@ -7,8 +7,8 @@ GraphGenerator/GenerateGraphs
 CpuAlgorithm/CpuAlgorithm
 CudaAlgorithm/CudaImplementation
 result.txt
-resultThreads.txt
-resultCuda.txt
+resultThreads*.txt
+resultCuda*.txt
 *.o
 *.a
 .ipynb_checkpoints

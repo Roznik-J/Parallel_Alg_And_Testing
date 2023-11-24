@@ -8,6 +8,7 @@
 # >make run; to run GPU implementation with graphs.
 # >make runCal; to run GPU implementation with
 #     calibrated graphs.
+# >make saveResults; move results to the Results/Data folder
 # >make valgrind; to run GPU implementation with valgrind
 # >make clean; remove binary
 #
@@ -33,7 +34,7 @@ FILESCALIBRATED = $(wildcard ../GraphsSetTriangles/*.txt)
 VALGRIND_FLAGS = --tool=valgrind --leak-check=full
 
 NotValid:
-	@echo "Please specificy graphsV2, main, mainV2, run, or clean."
+	@echo "Please specificy main, run, runCal, saveResults, valgrind, or clean."
 
 main: CXXFLAGS += -g -rdynamic -DCOREDUMP_ENABLED
 main: ../Kernels/libkernels.a TestCase.cpp
@@ -44,6 +45,9 @@ run:
 
 runCal: 
 	@./$(TARGET) $(FILESCALIBRATED)
+
+saveResults: 
+	@mv resultCuda* ../Results/Data
 
 valgrind:
 		valgrind ./$(TARGETCUDA) $(FILESCALIBRATED)
