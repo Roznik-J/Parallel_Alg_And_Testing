@@ -4,6 +4,7 @@ GraphsDense/
 GraphsSparse/
 GraphsSetTriangles/
 GraphGenerator/GenerateGraphs
+CpuAlgorithm/CpuAlgorithm
 result.txt
 resultThreads.txt
 resultCuda.txt

@@ -1,8 +1,20 @@
-#*****************************************************
-# Developed by J. Roznik
-# 2023-11-24
-# Make File to generate the graphs
-#*****************************************************
+#********************************************************************
+#
+# Make File for Graph Generator
+#
+# Instructions:
+# >make Graphs; Build all graphs.
+# >make clean; Delete all graphs.
+#
+# History:
+#    Date         Name
+#    ----------   ---------
+#    11/24/2023 - J. Roznik
+#        Moved Graph Generator to a seperated workspace.
+#        Makefile changes.
+#    11/--/2023   J. Roznik
+#        Initial Development.
+#********************************************************************
 
 DIRECT = ../GraphsSparse ../GraphsDense ../GraphsSetTriangles
 

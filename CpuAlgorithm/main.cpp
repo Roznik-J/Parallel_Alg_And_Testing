@@ -1,5 +1,5 @@
-#include "TestCase.h"
-#include "NonGpuAlgorithms/MatrixMultiplication.h"
+#include "TestCase.hpp"
+#include "MatrixMultiplication.hpp"
 
 #include <string>
 #include <vector>
