@@ -1,6 +1,6 @@
 #********************************************************************
 #
-# Make File for Cuda implementation Unit Test
+# Make File for CPU implementation Unit Test
 #
 # Instructions:
 # >make all; build UT's
@@ -24,25 +24,25 @@ FILESCALIBRATED = $(wildcard ../../GraphsSetTriangles/*.txt)
 GTEST_DIR := ~/googletest/googletest
 
 # Tactical directory
-TACTICAL_DIR := ../../CudaAlgorithm
+TACTICAL_DIR := ../../CpuAlgorithm
 
 # Test source files
-TEST_SRCS := TestCaseUT.cpp ../../CudaAlgorithm/TestCase.cpp
+TEST_SRCS := TestCaseUT.cpp ../../CpuAlgorithm/TestCase.cpp ../../CpuAlgorithm/MatrixMultiplication.cpp
 
 # Test object files
 TEST_OBJS := $(TEST_SRCS:.cpp=.o)
 
 # Test executable
-TEST_EXEC := Unit_Test_CudaAlgorithm_TestCase
+TEST_EXEC := Unit_Test_CpuAlgorithm_TestCase
 
 # Include directories
-INCLUDES := -I$(GTEST_DIR)/include -I../../Kernels/inc -I/usr/local/cuda/include -I$(TACTICAL_DIR) 
+INCLUDES := -I$(GTEST_DIR)/include -I$(TACTICAL_DIR) 
 
 # Library directories
-LDFLAGS := -L$(GTEST_DIR)/lib -L../../Kernels -L/usr/local/cuda/lib64
+LDFLAGS := -L$(GTEST_DIR)/lib 
 
 # Libraries to link
-LDLIBS := -lgtest -lgtest_main -lpthread -lcudart -lcuda -lcublas -lkernels
+LDLIBS := -lgtest -lgtest_main -lpthread
 
 .PHONY: all clean
 

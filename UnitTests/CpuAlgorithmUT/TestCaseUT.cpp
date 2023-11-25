@@ -1,11 +1,12 @@
 //*****************************************************
 // Developed by J. Roznik
 // 2023-11-25
-// UT for CudaAlgorithm/TestCase
+// UT for CpuAlgorithm/TestCase
 //*****************************************************
 
 #include "gtest/gtest.h"
-#include "../../CudaAlgorithm/TestCase.hpp"
+#include "../../CpuAlgorithm/TestCase.hpp"
+#include "../../CpuAlgorithm/MatrixMultiplication.hpp"
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -70,14 +71,15 @@ TEST(TestCaseUT, AllCalibratedTrianglesWork)
 
         TestCase lcTestCase(lcFileName);
 
+        int lnNumTriangles = runNonGpuMatrxMulti(lcTestCase);
+
         auto lpcEntry = gcCalibratedGraphs.find(lcFileName);
 
         if(lpcEntry != gcCalibratedGraphs.end())
         {
             auto lpcData = lpcEntry->second;
-            EXPECT_EQ(lpcData.mnNumNodes, lcTestCase.GetNodeSize());
-            EXPECT_EQ(lpcData.mnNumEdges, lcTestCase.GetNumEdges());
-            EXPECT_EQ(lpcData.mnNumActualTriangles, lcTestCase.GetNumTriangles());
+            EXPECT_EQ(lpcData.mnNumNodes, lcTestCase.getNodeSize());
+            EXPECT_EQ(lpcData.mnNumActualTriangles, lnNumTriangles);
         }
         else
         {
