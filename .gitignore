@@ -12,3 +12,4 @@ resultCuda*.txt
 *.o
 *.a
 .ipynb_checkpoints
+Unit_Test_*
