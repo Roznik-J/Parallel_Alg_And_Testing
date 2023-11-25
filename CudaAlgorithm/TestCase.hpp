@@ -13,13 +13,13 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-class TestCaseV2 {
-
+class TestCase 
+{
 public:
 
-    TestCaseV2(std::string& arcFileName);
+    TestCase(std::string& arcFileName);
 
-    virtual ~TestCaseV2(void);
+    virtual ~TestCase(void);
 
     void printEdges(void);
 

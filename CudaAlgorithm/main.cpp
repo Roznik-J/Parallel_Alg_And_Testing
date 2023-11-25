@@ -472,7 +472,7 @@ int main(int argc, char * argv[])
         std::cout << "Running Test Case " << fileName << " "<< i<< std::endl;
 		
 		// build test case graph
-		TestCaseV2 testCase(fileName);
+		TestCase testCase(fileName);
 
         //sleep(1);
         //usleep(500000); 

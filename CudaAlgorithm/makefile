@@ -22,7 +22,7 @@
 #        Initial Development.
 #********************************************************************
 
-CFLAGS = -g -Wall -O2
+CFLAGS = -g -std=c++17 -Wall -O2
 LDFLAGS = -L./Kernels -lkernels
 
 TARGET = CudaImplementation
