@@ -17,6 +17,9 @@
 CXX := g++
 CXXFLAGS := -std=c++17 -Wall -Wextra
 
+# calibrated triangle graphs
+FILESCALIBRATED = $(wildcard ../../GraphsSetTriangles/*.txt)
+
 # Google Test directory
 GTEST_DIR := ~/googletest/googletest
 
@@ -55,7 +58,7 @@ $(TEST_EXEC): $(TEST_OBJS)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 runUT:
-	./$(TEST_EXEC)
+	./$(TEST_EXEC) $(FILESCALIBRATED)
 
 clean:
 	rm -f $(TEST_OBJS) $(TEST_EXEC)
