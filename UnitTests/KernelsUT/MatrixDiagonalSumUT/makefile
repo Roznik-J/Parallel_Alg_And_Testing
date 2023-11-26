@@ -1,6 +1,6 @@
 #********************************************************************
 #
-# Make File for Kernel_BuildAdjancencyMatrix Unit Tests
+# Make File for Kernel_MatrixDiagonalSum Unit Tests
 #
 # Instructions:
 # >make all; build UT's
@@ -10,7 +10,7 @@
 # History:
 #    Date         Name
 #    ----------   ---------
-#    11/25/2023   J. Roznik
+#    11/26/2023   J. Roznik
 #        Initial Development.
 #********************************************************************
 
@@ -28,13 +28,13 @@ GTEST_DIR := ~/googletest/googletest
 TACTICAL_DIR := ../../Kernels/inc
 
 # Test source files
-TEST_SRCS := tcBuildAdjacencyMatrixUT.cpp ../../../Kernels/inc/tcBuildAdjacencyMatrix.hpp
+TEST_SRCS := tcMatrixDiagonalSumUT.cpp ../../../Kernels/inc/tcMatrixDiagonalSum.hpp
 
 # Test object files
 TEST_OBJS := $(TEST_SRCS:.cpp=.o)
 
 # Test executable
-TEST_EXEC := Unit_Test_Kernel_tcBuildAdjacencyMatrix
+TEST_EXEC := Unit_Test_Kernel_tcMatrixDiagonalSum
 
 # Include directories
 INCLUDES := -I$(GTEST_DIR)/include -I../../../Kernels/inc -I/usr/local/cuda/include -I$(TACTICAL_DIR) 

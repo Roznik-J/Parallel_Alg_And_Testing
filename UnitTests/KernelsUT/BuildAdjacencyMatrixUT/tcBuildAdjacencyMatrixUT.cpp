@@ -1,7 +1,7 @@
 //*****************************************************
 // Developed by J. Roznik
 // 2023-11-25
-// UT for CudaAlgorithm/TestCase
+// UT for Kernel/tcBuildAdjancencyMatrix
 //*****************************************************
 
 #include "gtest/gtest.h"
