@@ -4,6 +4,7 @@
 #
 # Instructions:
 # >make all; build UT's
+# >make runUT; run UT's
 # >make clean; remove binary
 #
 # History:
@@ -18,7 +19,7 @@ CXX := g++
 CXXFLAGS := -std=c++20 -Wall -Wextra
 
 # calibrated triangle graphs
-FILESCALIBRATED = $(wildcard ../../GraphsSetTriangles/*.txt)
+FILESCALIBRATED = $(wildcard ../../../GraphsSetTriangles/*.txt)
 
 # Google Test directory
 GTEST_DIR := ~/googletest/googletest
@@ -27,7 +28,7 @@ GTEST_DIR := ~/googletest/googletest
 TACTICAL_DIR := ../../Kernels/inc
 
 # Test source files
-TEST_SRCS := tcBuildAdjacencyMatrixUT.cpp ../../Kernels/inc/tcBuildAdjacencyMatrix.hpp
+TEST_SRCS := tcBuildAdjacencyMatrixUT.cpp ../../../Kernels/inc/tcBuildAdjacencyMatrix.hpp
 
 # Test object files
 TEST_OBJS := $(TEST_SRCS:.cpp=.o)
@@ -36,10 +37,10 @@ TEST_OBJS := $(TEST_SRCS:.cpp=.o)
 TEST_EXEC := Unit_Test_Kernel_tcBuildAdjacencyMatrix
 
 # Include directories
-INCLUDES := -I$(GTEST_DIR)/include -I../../Kernels/inc -I/usr/local/cuda/include -I$(TACTICAL_DIR) 
+INCLUDES := -I$(GTEST_DIR)/include -I../../../Kernels/inc -I/usr/local/cuda/include -I$(TACTICAL_DIR) 
 
 # Library directories
-LDFLAGS := -L$(GTEST_DIR)/lib -L../../Kernels -L/usr/local/cuda/lib64
+LDFLAGS := -L$(GTEST_DIR)/lib -L../../../Kernels -L/usr/local/cuda/lib64
 
 # Libraries to link
 LDLIBS := -lgtest -lgtest_main -lpthread -lcudart -lcuda -lcublas -lkernels
@@ -55,7 +56,7 @@ $(TEST_EXEC): $(TEST_OBJS)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 runUT:
-	./$(TEST_EXEC) $(FILESCALIBRATED)
+	./$(TEST_EXEC)
 
 clean:
 	rm -f $(TEST_OBJS) $(TEST_EXEC)

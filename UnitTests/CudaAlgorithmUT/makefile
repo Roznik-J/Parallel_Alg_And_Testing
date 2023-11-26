@@ -4,6 +4,7 @@
 #
 # Instructions:
 # >make all; build UT's
+# >make runUT; run UT's
 # >make clean; remove binary
 #
 # History:
