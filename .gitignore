@@ -13,3 +13,4 @@ resultCuda*.txt
 *.a
 .ipynb_checkpoints
 Unit_Test_*
+InputPartition_*

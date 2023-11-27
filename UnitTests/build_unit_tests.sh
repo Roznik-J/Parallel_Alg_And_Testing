@@ -46,6 +46,16 @@ if [ "$command" == "build" ]; then
     echo "Building MatrixMultiplyUT"
     make all
     cd "../.."
+    cd "InputPartitioning"
+    echo "Building InputPartitioning"
+    cd "CpuPartitionTest"
+    echo "Building CpuPartitionTest"
+    make all
+    cd ".."
+    cd "CudaPartitionTest"
+    echo "Building CudaPartitionTest"
+    make all
+    cd "../.."
 
 elif [ "$command" == "clean" ]; then
     echo "Cleaning Unit Tests..."
@@ -69,6 +79,16 @@ elif [ "$command" == "clean" ]; then
     cd ".."
     cd "MatrixMultiplyUT"
     echo "Cleaning MatrixMultiplyUT"
+    make clean
+    cd "../.."
+    cd "InputPartitioning"
+    echo "Cleaning InputPartitioning"
+    cd "CpuPartitionTest"
+    echo "Cleaning CpuPartitionTest"
+    make clean
+    cd ".."
+    cd "CudaPartitionTest"
+    echo "Cleaning CudaPartitionTest"
     make clean
     cd "../.."
 else

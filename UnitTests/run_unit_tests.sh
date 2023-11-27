@@ -31,4 +31,14 @@ cd ".."
 
 cd "MatrixMultiplyUT"
 make runUT
+cd "../.."
+
+cd "InputPartitioning"
+
+cd "CpuPartitionTest"
+make runUT
 cd ".."
+
+cd "CudaPartitionTest"
+make runUT
+cd "../.."
