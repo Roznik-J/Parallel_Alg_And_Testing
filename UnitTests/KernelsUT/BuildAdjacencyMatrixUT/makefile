@@ -59,4 +59,4 @@ runUT:
 	./$(TEST_EXEC)
 
 clean:
-	rm -f $(TEST_OBJS) $(TEST_EXEC)
+	rm -f *.o $(TEST_EXEC)
