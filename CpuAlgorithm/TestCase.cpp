@@ -7,7 +7,7 @@
 
 using namespace std;
 
-TestCase::TestCase(string fileName) : fileName(fileName) {
+TestCase::TestCase(const string& fileName) : fileName(fileName) {
     ifstream fileIn(fileName);
     int numEdges;
     float sparsity;

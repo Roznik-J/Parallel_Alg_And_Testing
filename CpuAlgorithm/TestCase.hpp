@@ -10,7 +10,7 @@ class TestCase {
     public:
         vector<vector<int>> adjList;
         vector<vector<int>> adjMatrix;
-        TestCase(string fileName);
+        TestCase(const string& fileName);
         void printList();
        	int getNodeSize();
     private:
