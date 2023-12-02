@@ -5,7 +5,7 @@
 //*****************************************************
 
 
-#include "TestCaseV2.hpp"
+#include "TestCase.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -23,7 +23,7 @@
 
 static const int snWarpSize = 32;
 
-TestCaseV2::TestCaseV2(std::string& arcFileName)
+TestCase::TestCase(std::string& arcFileName)
 {
     std::ifstream fileIn(arcFileName);
 
@@ -96,7 +96,7 @@ TestCaseV2::TestCaseV2(std::string& arcFileName)
     //printAdjacencyMatrix();
 }
 
-TestCaseV2::~TestCaseV2(void)
+TestCase::~TestCase(void)
 {
     auto handlereturn = cublasDestroy(mcCublasHandle);
     Kernel::Err::GetError(handlereturn);
@@ -115,7 +115,7 @@ TestCaseV2::~TestCaseV2(void)
 
 }
 
-void TestCaseV2::printEdges(void)
+void TestCase::printEdges(void)
 {
     for(int lnIdx=0; lnIdx < mcSources.size(); lnIdx++)
     {
@@ -123,14 +123,14 @@ void TestCaseV2::printEdges(void)
     }
 }
 
-void TestCaseV2::printGraphInfo(void)
+void TestCase::printGraphInfo(void)
 {
     std::cout << "Number of Nodes: " << mnNumNodes;
     std::cout << " Number of Edges: " << mnNumEdges;
     std::cout << " Graph Sparsity: " << mrSparsity << std::endl;
 }
 
-void TestCaseV2::printAdjacencyMatrix(void)
+void TestCase::printAdjacencyMatrix(void)
 {
     int lnDataSize = mnNumNodes*mnNumNodes;
     float* lpfRCpu = (float*)malloc(sizeof(float)*lnDataSize);
@@ -153,7 +153,7 @@ void TestCaseV2::printAdjacencyMatrix(void)
     free(lpfRCpu);
 }
 
-void TestCaseV2::ComputeNumTriangles(void)
+void TestCase::ComputeNumTriangles(void)
 {
     int InputDataSize = mnNumNodes*mnNumNodes;
 
@@ -239,22 +239,22 @@ void TestCaseV2::ComputeNumTriangles(void)
 
 }
 
-int TestCaseV2::GetNumTriangles(void)
+int TestCase::GetNumTriangles(void)
 {
     return mnNumTriangles;
 }
 
-int TestCaseV2::GetNodeSize(void)
+int TestCase::GetNodeSize(void)
 {
     return mnNumNodes;
 }
 
-int TestCaseV2::GetNumEdges(void)
+int TestCase::GetNumEdges(void)
 {
     return mnNumEdges;
 }
 
-void TestCaseV2::GetTimingInformation(std::vector<float>& arcTimeParameters)
+void TestCase::GetTimingInformation(std::vector<float>& arcTimeParameters)
 {
     arcTimeParameters.clear();
     arcTimeParameters.push_back(mrAdjBuildSetupMS);
@@ -265,7 +265,7 @@ void TestCaseV2::GetTimingInformation(std::vector<float>& arcTimeParameters)
     arcTimeParameters.push_back(mrProgramTimeMS);
 }
 
-void TestCaseV2::ConstructAdjacencyMatrix(void)
+void TestCase::ConstructAdjacencyMatrix(void)
 {
     int lnDataSize = mnNumNodes*mnNumNodes;
 
@@ -313,7 +313,7 @@ void TestCaseV2::ConstructAdjacencyMatrix(void)
 
 }
 
-void TestCaseV2::CreateCudaEvents(void)
+void TestCase::CreateCudaEvents(void)
 {
     //cudaEventCreate(&mcStartAdjBuildSetup);
     //cudaEventCreate(&mcStopAdjBuildSetup);
@@ -331,7 +331,7 @@ void TestCaseV2::CreateCudaEvents(void)
     cudaEventCreate(&mcStopProgram);
 }
 
-void TestCaseV2::DestroyCudaEvents(void)
+void TestCase::DestroyCudaEvents(void)
 {
     //cudaEventDestroy(mcStartAdjBuildSetup);
     //cudaEventDestroy(mcStopAdjBuildSetup);

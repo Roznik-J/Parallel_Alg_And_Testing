@@ -1,5 +1,5 @@
-#ifndef TESTCASE_H
-#define TESTCASE_H
+#ifndef TESTCASE_HPP
+#define TESTCASE_HPP
 
 #include <vector>
 #include <string>
@@ -10,7 +10,7 @@ class TestCase {
     public:
         vector<vector<int>> adjList;
         vector<vector<int>> adjMatrix;
-        TestCase(string fileName);
+        TestCase(const string& fileName);
         void printList();
        	int getNodeSize();
     private:

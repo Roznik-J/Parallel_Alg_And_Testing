@@ -1,4 +1,4 @@
-#include "../TestCase.h"
+#include "TestCase.hpp"
 #include <thread>
 #include <iostream>
 #include <vector>

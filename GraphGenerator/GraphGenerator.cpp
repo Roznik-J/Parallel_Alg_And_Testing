@@ -28,7 +28,7 @@ std::pair<int,int> GetValidEdge(int numNodes)
     return(val);
 }
 
-void RandomGraphV2(int anNumNodes, float anSparsity)
+void RandomGraph(int anNumNodes, float anSparsity)
 {
     // Set seed based on current time
     std::srand(static_cast<unsigned>(std::time(nullptr)));
@@ -65,11 +65,11 @@ void RandomGraphV2(int anNumNodes, float anSparsity)
 
     if(anSparsity <= 0.5)
     {
-        lcFileName = "v2GraphsSparse/" + std::string(std::to_string(anNumNodes)) + ".txt";
+        lcFileName = "../GraphsSparse/" + std::string(std::to_string(anNumNodes)) + ".txt";
     }
     else
     {
-        lcFileName = "v2GraphsDense/" + std::string(std::to_string(anNumNodes)) + ".txt";
+        lcFileName = "../GraphsDense/" + std::string(std::to_string(anNumNodes)) + ".txt";
     }
 
     std::ofstream file(lcFileName);
@@ -103,7 +103,7 @@ void TriangleGraph(int anNumNodes, int anNumTriangles)
         edges.insert(lcEdge);
     }
     std::string lcFileName;
-    lcFileName = "v2GraphsSetTriangles/" + std::string(std::to_string(anNumTriangles)) + ".txt";
+    lcFileName = "../GraphsSetTriangles/" + std::string(std::to_string(anNumTriangles)) + ".txt";
     std::ofstream file(lcFileName);
     file << anNumNodes << std::endl;
 	file << edges.size() << std::endl;
@@ -119,18 +119,12 @@ void TriangleGraph(int anNumNodes, int anNumTriangles)
 int main()
 {
 
-    //for(int i = 5; i < 200; i++)
-    //{
-    //    RandomGraphV2(i,0.5);
-    //    RandomGraphV2(i,1);
-    //}
-    //for(int i = 0; i < 200; i++)
-    //{
-    //    TriangleGraph(300, i);
-    //}
-    //TriangleGraph(10, 0);
-    //for(int i = 100; i <= 10000; i+=100)
-    for(int i = 10; i <= 1000; i+=10)
+    for(int i = 5; i < 200; i++)
+    {
+        RandomGraph(i,0.5);
+        RandomGraph(i,1);
+    }
+    for(int i = 10; i <= 200; i+=10)
     {
         TriangleGraph(i, i-2);
     }
