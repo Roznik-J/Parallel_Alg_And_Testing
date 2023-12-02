@@ -1,14 +1,4 @@
-# Parallel Algorithm Project
+# Parallel Algorithm Project and Software Testing Project
 
-## WARNING: CODE MAY COMBUST OR BECOME SENTIENT. PROCEED WITH CAUTION.
-
-```      __
- _(\    |@@|
-(__/\__ \--/ __
-   \___|----|  |   __
-       \ }{ /\ )_ / _\
-       /\__/\ \__O (__
-      (--/\--)    \__/
-      _)(  )(_
-     `---''---`
-```
+This repository contains a C++/Cuda project which finds the number of triangles in a graph.
+This repository also contains a graph generator project.
